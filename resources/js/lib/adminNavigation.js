@@ -85,9 +85,9 @@ export const adminNavigation = [
   },
   {
     label: "Jamaah",
-    route: "jamaah.index",
+    route: "jamaahs.index",
     icon: Users,
-    match: ["jamaah.*"],
+    match: ["jamaahs.*"],
     group: "Manajemen",
     roles: ["admin", "super-admin", "ketua-dkm", "sekretaris"],
     permissions: ["jamaah.view"],
