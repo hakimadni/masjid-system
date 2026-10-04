@@ -16,6 +16,7 @@ import MoneyDisplay from "@/Components/ui/display/MoneyDisplay.vue"
 import ActionMenu from "@/Components/ui/dropdown/ActionMenu.vue"
 import PageHeader from "@/Components/ui/page/PageHeader.vue"
 import ConfirmDialog from "@/Components/ui/dialog/ConfirmDialog.vue"
+import MobileFab from "@/Components/MobileFab.vue"
 
 const props = defineProps({
   filters: { type: Object, required: true },
@@ -114,6 +115,10 @@ const openRejectDialog = (id) => {
   rejectionDialog.value.open = true
 }
 
+const scrollToForm = () => {
+  document.getElementById('create-form')?.scrollIntoView({ behavior: 'smooth' })
+}
+
 const submitReject = () => {
   if (rejectionDialog.value.itemId) {
     rejectionForm.patch(route('finance.update-status', rejectionDialog.value.itemId), {
@@ -133,7 +138,11 @@ const submitReject = () => {
 
   <AuthenticatedLayout title="Keuangan">
     <div class="space-y-6">
-      <PageHeader title="Keuangan" description="Kelola transaksi pemasukan dan pengeluaran dengan approval yang ketat dan jejak audit yang rapi." />
+      <PageHeader title="Keuangan" description="Kelola transaksi pemasukan dan pengeluaran dengan approval yang ketat dan jejak audit yang rapi.">
+        <template #actions>
+          <Button class="hidden md:inline-flex" @click="scrollToForm">Tambah Transaksi</Button>
+        </template>
+      </PageHeader>
 
       <div v-if="flash.success" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
         {{ flash.success }}
@@ -187,7 +196,7 @@ const submitReject = () => {
         </div>
       </Card>
 
-      <Card class="p-5">
+      <Card id="create-form" class="p-5">
         <div>
           <p class="text-sm font-semibold text-slate-900">Catat Transaksi Baru</p>
           <p class="mt-1 text-sm text-slate-500">Gunakan status `pending` untuk proses verifikasi dan `approved` untuk pencatatan final.</p>
@@ -282,7 +291,21 @@ const submitReject = () => {
           <TableSkeleton v-if="loadingTable" :rows="6" :columns="6" />
 
           <template v-else>
-            <DataTable v-if="financeEntries.data.length">
+            <DataTable v-if="financeEntries.data.length" :data="financeEntries.data">
+              <template #mobile-card="{ item }">
+                <div class="flex items-center justify-between border-b border-slate-100 bg-white p-4 rounded-xl shadow-sm mb-2">
+                  <div>
+                    <p class="font-medium text-slate-900">{{ item.title }}</p>
+                    <p class="text-xs text-slate-500">{{ item.category }} • {{ item.transaction_date }}</p>
+                    <p class="mt-1 font-medium text-slate-900"><MoneyDisplay :value="item.amount" /></p>
+                    <p class="text-xs text-slate-500">{{ item.entry_type === 'income' ? 'Pemasukan' : 'Pengeluaran' }}</p>
+                  </div>
+                  <div class="flex flex-col items-end gap-2">
+                    <StatusBadge :status="item.status" />
+                    <ActionMenu :items="actionItems(item)" @select="handleAction(item, $event)" />
+                  </div>
+                </div>
+              </template>
               <thead class="bg-slate-50 text-xs uppercase text-slate-500">
                 <tr>
                   <th class="px-4 py-3 text-left">Transaksi</th>
@@ -341,5 +364,6 @@ const submitReject = () => {
     >
       <Textarea v-model="rejectionForm.rejected_reason" :rows="3" placeholder="Masukkan alasan penolakan..." />
     </ConfirmDialog>
+    <MobileFab @click="scrollToForm" />
   </AuthenticatedLayout>
 </template>

@@ -15,6 +15,8 @@ import {
   isNavItemOrChildActive,
 } from "@/lib/adminNavigation"
 
+import MobileBottomNav from "@/Components/MobileBottomNav.vue"
+
 const props = defineProps({
   title: { type: String, default: "" },
 })
@@ -186,7 +188,7 @@ const expandedGroups = ref(new Set())
         </div>
       </aside>
 
-      <div class="flex min-h-screen min-w-0 flex-1 flex-col px-3 pb-4 pt-3 sm:px-4 lg:px-6">
+      <div class="flex min-h-screen min-w-0 flex-1 flex-col px-3 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-4 pt-3 sm:px-4 lg:px-6">
         <header class="sticky top-3 z-30">
           <div class="rounded-[1.75rem] border border-white/70 bg-white/80 shadow-lg shadow-slate-950/5 backdrop-blur">
             <div class="flex items-center gap-3 px-4 py-3 sm:px-5 lg:px-6">
@@ -255,6 +257,8 @@ const expandedGroups = ref(new Set())
         </footer>
       </div>
     </div>
+    
+    <MobileBottomNav @open-menu="mobileOpen = true" />
 
     <SheetPanel
       :open="mobileOpen"

@@ -15,6 +15,7 @@ import StatusBadge from "@/Components/ui/status/StatusBadge.vue"
 import ActionMenu from "@/Components/ui/dropdown/ActionMenu.vue"
 import PageHeader from "@/Components/ui/page/PageHeader.vue"
 import ConfirmDialog from "@/Components/ui/dialog/ConfirmDialog.vue"
+import MobileFab from "@/Components/MobileFab.vue"
 
 const props = defineProps({
   filters: { type: Object, required: true },
@@ -113,6 +114,10 @@ const submitConfirm = () => {
   }
 }
 
+const scrollToForm = () => {
+  document.getElementById('create-form')?.scrollIntoView({ behavior: 'smooth' })
+}
+
 const submitReject = () => {
   if (rejectDialog.value.itemId) {
     statusForm.patch(route("donations.update-status", rejectDialog.value.itemId), {
@@ -135,7 +140,11 @@ const submitReject = () => {
       <PageHeader
         title="Donasi"
         description="Kelola donasi manual, status konfirmasi, dan pencatatan kas masjid."
-      />
+      >
+        <template #actions>
+          <Button class="hidden md:inline-flex" @click="scrollToForm">Tambah Donasi</Button>
+        </template>
+      </PageHeader>
 
       <div v-if="flash.success" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
         {{ flash.success }}
@@ -181,7 +190,7 @@ const submitReject = () => {
         </div>
       </Card>
 
-      <Card class="p-5">
+      <Card id="create-form" class="p-5">
         <div>
           <p class="text-sm font-semibold text-slate-900">Catat Donasi Manual</p>
           <p class="mt-1 text-sm text-slate-500">Donasi `confirmed` otomatis masuk ke pencatatan keuangan masjid.</p>
@@ -289,7 +298,20 @@ const submitReject = () => {
           <TableSkeleton v-if="loadingTable" :rows="6" :columns="5" />
 
           <template v-else>
-            <DataTable v-if="donations.data.length">
+            <DataTable v-if="donations.data.length" :data="donations.data">
+              <template #mobile-card="{ item }">
+                <div class="flex items-center justify-between border-b border-slate-100 bg-white p-4 rounded-xl shadow-sm mb-2">
+                  <div>
+                    <p class="font-medium text-slate-900">{{ item.donor_name }}</p>
+                    <p class="text-xs text-slate-500">{{ item.campaign }} • {{ item.donation_date }}</p>
+                    <p class="mt-1 font-medium text-slate-900">{{ formatCurrency(item.amount) }}</p>
+                  </div>
+                  <div class="flex flex-col items-end gap-2">
+                    <StatusBadge :status="item.status" />
+                    <ActionMenu :items="actionItems(item)" @select="handleAction(item, $event)" />
+                  </div>
+                </div>
+              </template>
               <thead class="bg-slate-50 text-xs uppercase text-slate-500">
                 <tr>
                   <th class="px-4 py-3 text-left">Donatur</th>
@@ -357,5 +379,6 @@ const submitReject = () => {
       :danger="true"
       @confirm="submitReject"
     />
+    <MobileFab @click="scrollToForm" />
   </AuthenticatedLayout>
 </template>
