@@ -1,0 +1,254 @@
+<!DOCTYPE html><html lang="id"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MasjidOS Kanban Board</title>
+<style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;background:#0f172a;color:#e2e8f0}.container{max-width:1400px;margin:0 auto;padding:32px}h1{color:#38bdf8;margin-bottom:8px}h2{color:#fbbf24;margin-top:40px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #334155}h3{color:#fbbf24;margin-top:32px}.meta{color:#94a3b8;margin-bottom:24px}table{width:100%;border-collapse:collapse;margin:16px 0 32px;background:#1e293b;border-radius:8px;overflow:hidden}th{background:#1e3a8a;color:#dbeafe;padding:10px 12px;text-align:left;font-size:14px}td{padding:9px 12px;border-top:1px solid #334155;font-size:13px;vertical-align:top}tr:hover{background:#1e3a5f}code{background:#0f172a;padding:2px 4px;border-radius:4px}.done{color:#22c55e;font-weight:700}.review{color:#f59e0b;font-weight:700}.backlog{color:#f87171;font-weight:700}.in-progress,.in_progress{color:#60a5fa;font-weight:700}.blocked{color:#c084fc;font-weight:700}.ready{color:#2dd4bf;font-weight:700}</style></head><body><div class="container">
+<h1>Kanban Board — MasjidOS</h1>
+<h2>Status Legend</h2>
+<p><code>Backlog</code> = belum dikerjakan</p>
+<p><code>Ready</code> = siap dikerjakan</p>
+<p><code>In Progress</code> = sedang dikerjakan</p>
+<p><code>Review</code> = perlu dicek user/dev</p>
+<p><code>Done</code> = selesai</p>
+<p><code>Blocked</code> = terhambat</p>
+<h2>Kanban Policy</h2>
+<p>Maksimal 2 task <code>In Progress</code> dalam satu waktu.</p>
+<p>Jangan mulai sprint baru jika sprint sebelumnya masih ada blocker critical.</p>
+<p>Task besar harus dipecah.</p>
+<p>Setelah task selesai, tambahkan notes singkat.</p>
+<p>Jangan hapus task lama; ubah statusnya.</p>
+<h2>Sprint 0 — Repository Audit & Project Setup</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S0-01</td><td>Audit backend framework and version</td><td class="done">Done</td><td>AI</td><td>Verified PHP 8.4.8, Composer 2.8.8.</td></tr>
+<tr><td>S0-02</td><td>Audit frontend framework and version</td><td class="done">Done</td><td>AI</td><td>Verified Node 22.22.3, npm 10.9.8, Vite build passes.</td></tr>
+<tr><td>S0-03</td><td>Audit auth system</td><td class="done">Done</td><td>AI</td><td>Verified auth + verified middleware usage across <code>routes/web.php</code> and <code>routes/admin.php</code> for admin flows.</td></tr>
+<tr><td>S0-04</td><td>Audit role/permission existing logic</td><td class="done">Done</td><td>AI</td><td>Repo audited; actual code is role-heavy and not fully aligned with permission guide.</td></tr>
+<tr><td>S0-05</td><td>Audit routes and admin layout</td><td class="done">Done</td><td>AI</td><td>Admin/public routes and layout structure inspected.</td></tr>
+<tr><td>S0-06</td><td>Audit database migrations/models</td><td class="done">Done</td><td>AI</td><td>Migrations inspected; sqlite schema applied through documents/wakaf/zakat.</td></tr>
+<tr><td>S0-07</td><td>Audit ShadCN Vue availability</td><td class="done">Done</td><td>AI</td><td>ShadCN-style component tree verified in use across admin/public pages.</td></tr>
+<tr><td>S0-08</td><td>Produce technical implementation plan</td><td class="done">Done</td><td>AI</td><td>Delivered audit gap table plus <code>13_AUTHORIZATION_ALIGNMENT_PLAN.md</code> for corrective execution.</td></tr>
+<tr><td>S0-09</td><td>Produce guide-vs-code gap table by file (Point A)</td><td class="done">Done</td><td>AI</td><td>Delivered precise file-level alignment/gap mapping against guide pack.</td></tr>
+<tr><td>S0-10</td><td>Write authorization alignment plan</td><td class="done">Done</td><td>AI</td><td>See <code>13_AUTHORIZATION_ALIGNMENT_PLAN.md</code> for Sprint 13A corrective plan.</td></tr>
+</tbody></table>
+<h2>Sprint 1 — Auth, Roles, Permissions Foundation</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S1-01</td><td>Reuse or create roles table/model</td><td class="done">Done</td><td>AI</td><td>Roles model/table verified in repo and active DB state.</td></tr>
+<tr><td>S1-02</td><td>Seed default roles</td><td class="done">Done</td><td>AI</td><td>Re-seeded and verified role/permission population including guide-aligned additions.</td></tr>
+<tr><td>S1-03</td><td>Add permission helper or middleware</td><td class="done">Done</td><td>AI</td><td><code>User::hasPermissionTo()</code> plus Inertia <code>permission_slugs</code> sharing are implemented and verified.</td></tr>
+<tr><td>S1-04</td><td>Protect admin routes</td><td class="done">Done</td><td>AI</td><td>Admin routes now use permission middleware gates for module/action access; verified route registration and syntax.</td></tr>
+<tr><td>S1-05</td><td>Add role-based sidebar visibility</td><td class="done">Done</td><td>AI</td><td>Sidebar visibility now supports permission-aware access with role fallback via <code>resources/js/lib/adminNavigation.js</code>.</td></tr>
+<tr><td>S1-06</td><td>Verify Super Admin full access</td><td class="done">Done</td><td>AI</td><td>Verified <code>super-admin</code> receives all seeded permissions in DB state after re-seed.</td></tr>
+<tr><td>S1-07</td><td>Verify unauthorized access blocked</td><td class="review">Review</td><td>AI</td><td>Controller checks and route middleware applied; needs manual verification.</td></tr>
+</tbody></table>
+<h2>Sprint 2 — Core Database & Seeders</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S2-01</td><td>Create finance_categories migration/model</td><td class="done">Done</td><td>AI</td><td>Migration/model verified in <code>create_admin_core_tables</code> and <code>app/Models/FinanceCategory.php</code>.</td></tr>
+<tr><td>S2-02</td><td>Create financial_transactions migration/model</td><td class="done">Done</td><td>AI</td><td>Migration/model verified in <code>create_admin_core_tables</code> and existing finance transaction model usage.</td></tr>
+<tr><td>S2-03</td><td>Create donation_categories migration/model</td><td class="done">Done</td><td>AI</td><td>Migration/model verified in <code>2026_06_13_200000_add_donation_categories_and_jamaahs.php</code> and <code>app/Models/DonationCategory.php</code>.</td></tr>
+<tr><td>S2-04</td><td>Create donations migration/model</td><td class="done">Done</td><td>AI</td><td>Donation tables/models verified in migration and <code>app/Models/Donation.php</code>.</td></tr>
+<tr><td>S2-05</td><td>Create schedules migration/model</td><td class="done">Done</td><td>AI</td><td>Prayer/service schedule tables and models verified.</td></tr>
+<tr><td>S2-06</td><td>Create events migration/model</td><td class="done">Done</td><td>AI</td><td>Event migration/model verified.</td></tr>
+<tr><td>S2-07</td><td>Create jamaahs migration/model</td><td class="done">Done</td><td>AI</td><td>Migration/model verified in <code>2026_06_13_200000_add_donation_categories_and_jamaahs.php</code> and <code>app/Models/Jamaah.php</code>.</td></tr>
+<tr><td>S2-08</td><td>Create assets migration/model</td><td class="done">Done</td><td>AI</td><td>Asset migration/model verified.</td></tr>
+<tr><td>S2-09</td><td>Create documents migration/model</td><td class="done">Done</td><td>AI</td><td>Documents migration/model verified.</td></tr>
+<tr><td>S2-10</td><td>Create announcements migration/model</td><td class="done">Done</td><td>AI</td><td>Announcement migration/model verified.</td></tr>
+<tr><td>S2-11</td><td>Create default category seeders</td><td class="done">Done</td><td>AI</td><td><code>AdminMvpSeeder.php</code> seeds default finance categories and baseline admin demo data.</td></tr>
+<tr><td>S2-12</td><td>Run migration and seeder validation</td><td class="done">Done</td><td>AI</td><td>Migrations exist, seeder executed successfully, and DB state was verified during review.</td></tr>
+</tbody></table>
+<h2>Sprint 3 — Admin Layout & ShadCN UI Shell</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S3-01</td><td>Create or improve admin sidebar layout</td><td class="done">Done</td><td>AI</td><td><code>AuthenticatedLayout.vue</code> provides a substantial admin shell/sidebar layout.</td></tr>
+<tr><td>S3-02</td><td>Create mobile sidebar Sheet/drawer</td><td class="done">Done</td><td>AI</td><td>Mobile sheet/drawer flow exists via <code>SheetPanel</code> in <code>AuthenticatedLayout.vue</code>.</td></tr>
+<tr><td>S3-03</td><td>Add topbar and user menu</td><td class="done">Done</td><td>AI</td><td>Topbar and <code>UserMenu</code> are implemented in authenticated layout.</td></tr>
+<tr><td>S3-04</td><td>Add PageHeader component</td><td class="done">Done</td><td>AI</td><td>Reusable <code>resources/js/Components/ui/page/PageHeader.vue</code> created and used in Finance and Media pages.</td></tr>
+<tr><td>S3-05</td><td>Add StatusBadge component</td><td class="done">Done</td><td>AI</td><td><code>resources/js/Components/ui/status/StatusBadge.vue</code> exists.</td></tr>
+<tr><td>S3-06</td><td>Add MoneyDisplay component</td><td class="done">Done</td><td>AI</td><td>Added reusable <code>resources/js/Components/ui/display/MoneyDisplay.vue</code> for shared currency formatting.</td></tr>
+<tr><td>S3-07</td><td>Add EmptyState component</td><td class="done">Done</td><td>AI</td><td><code>resources/js/Components/ui/empty/EmptyState.vue</code> exists.</td></tr>
+<tr><td>S3-08</td><td>Add ConfirmDialog pattern</td><td class="done">Done</td><td>AI</td><td>Reusable <code>resources/js/Components/ui/dialog/ConfirmDialog.vue</code> created; Finance reject and Media delete now use shared pattern.</td></tr>
+</tbody></table>
+<h2>Sprint 4 — Finance Module Part 1</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S4-01</td><td>Finance category list page</td><td class="done">Done</td><td>AI</td><td>Finance category list page now exists: <code>resources/js/Pages/Admin/FinanceCategories/Index.vue</code>.</td></tr>
+<tr><td>S4-02</td><td>Finance category create/edit</td><td class="done">Done</td><td>AI</td><td>FinanceCategoryController + create/edit routes + page implemented.</td></tr>
+<tr><td>S4-03</td><td>Financial transaction list page</td><td class="done">Done</td><td>AI</td><td>Finance transaction list page exists, was re-verified in <code>resources/js/Pages/Admin/Finance/Index.vue</code>, and build passes.</td></tr>
+<tr><td>S4-04</td><td>Create income form</td><td class="done">Done</td><td>AI</td><td>Shared create transaction form supports <code>income</code> flow and was re-verified in Finance page.</td></tr>
+<tr><td>S4-05</td><td>Create expense form</td><td class="done">Done</td><td>AI</td><td>Shared create transaction form supports <code>expense</code> flow and was re-verified in Finance page.</td></tr>
+<tr><td>S4-06</td><td>Edit draft/pending transaction</td><td class="done">Done</td><td>AI</td><td>Edit page + route (<code>finance.edit</code>) implemented; edit blocked for approved transactions.</td></tr>
+<tr><td>S4-07</td><td>Transaction detail page</td><td class="done">Done</td><td>AI</td><td>Detail page + route (<code>finance.show</code>) implemented.</td></tr>
+<tr><td>S4-08</td><td>Finance filters date/category/status/type</td><td class="done">Done</td><td>AI</td><td>Controller + UI both implement search, date, category, status, and type filters.</td></tr>
+<tr><td>S4-09</td><td>Server-side finance validation</td><td class="done">Done</td><td>AI</td><td><code>AdminFinanceStoreRequest</code> enforces finance validation plus category/entry-type consistency and permission-aware authorization.</td></tr>
+</tbody></table>
+<h2>Sprint 5 — Finance Module Part 2</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S5-01</td><td>Implement FinanceService summary logic</td><td class="backlog">Backlog</td><td>AI</td><td>Summary logic still lives in FinanceController; no FinanceService class found.</td></tr>
+<tr><td>S5-02</td><td>Add approve transaction action</td><td class="done">Done</td><td>AI</td><td><code>FinanceController::updateStatus</code> sets approved_by/approved_at; approve ActionMenu confirmed in Finance UI.</td></tr>
+<tr><td>S5-03</td><td>Add reject transaction action</td><td class="done">Done</td><td>AI</td><td>Rejection Dialog with rejected_reason confirmed in Finance UI; controller clears approval metadata on reject.</td></tr>
+<tr><td>S5-04</td><td>Restrict approved transaction deletion</td><td class="done">Done</td><td>AI</td><td>Delete guard implemented in <code>FinanceController::destroy</code>; test verifies approved transactions cannot be deleted even by super-admin.</td></tr>
+<tr><td>S5-05</td><td>Add pending approval screen</td><td class="done">Done</td><td>AI</td><td>Pending approval page now exists: <code>resources/js/Pages/Admin/Finance/Pending.vue</code> + route <code>finance.pending</code>.</td></tr>
+<tr><td>S5-06</td><td>Add finance report page</td><td class="review">Review</td><td>AI</td><td><code>ReportController::index</code> compiles income/expense totals and recent transactions; full acceptance still pending.</td></tr>
+<tr><td>S5-07</td><td>Verify official balance calculation</td><td class="review">Review</td><td>AI</td><td>Income totals are approved-only; expense calculation not independently confirmed without full ReportController review.</td></tr>
+</tbody></table>
+<h2>Sprint 6 — Donation Module</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S6-01</td><td>Donation category list/create/edit</td><td class="done">Done</td><td>AI</td><td>DonationCategories migration/model/controller/page verified; DonationCategoryController with CRUD routes/UI implemented.</td></tr>
+<tr><td>S6-02</td><td>Donation list page</td><td class="done">Done</td><td>AI</td><td>Donation list page + summary cards confirmed in <code>resources/js/Pages/Admin/Donations/Index.vue</code>.</td></tr>
+<tr><td>S6-03</td><td>Create manual donation form</td><td class="done">Done</td><td>AI</td><td>Manual donation form confirmed with donor fields, amount, method, status, and date.</td></tr>
+<tr><td>S6-04</td><td>Donation detail page</td><td class="done">Done</td><td>AI</td><td>Created dedicated donation detail page, wired routes, and tested confirm/reject.</td></tr>
+<tr><td>S6-05</td><td>Confirm donation action</td><td class="done">Done</td><td>AI</td><td>Confirm action calls <code>updateStatus</code> with status=confirmed; <code>syncFinanceTransaction</code> runs automatically.</td></tr>
+<tr><td>S6-06</td><td>Reject donation action</td><td class="done">Done</td><td>AI</td><td>Reject action calls <code>updateStatus</code>; linked finance transaction deleted and finance_transaction_id cleared.</td></tr>
+<tr><td>S6-07</td><td>Link confirmed donation to finance income</td><td class="done">Done</td><td>AI</td><td><code>syncFinanceTransaction</code> confirmed in <code>DonationController</code> — creates approved finance income linked to donation.</td></tr>
+<tr><td>S6-08</td><td>Donation summary cards</td><td class="done">Done</td><td>AI</td><td>Summary cards (collected_total, pending_total, donor_total, records_total) confirmed on donations index.</td></tr>
+<tr><td>S6-09</td><td>Anonymous donor display rule</td><td class="done">Done</td><td>AI</td><td><code>donations.is_anonymous</code> column added; <code>Donor::maskedName()</code> / <code>maskedPhone()</code> implemented; <code>DonationController::serializeDonation()</code> masks donor when user lacks <code>donation.sensitive.view</code>.</td></tr>
+</tbody></table>
+<h2>Sprint 7 — Dashboard MVP</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S7-01</td><td>Saldo Kas card</td><td class="review">Review</td><td>AI</td><td>Dashboard exists; card presence/accuracy requires acceptance verification.</td></tr>
+<tr><td>S7-02</td><td>Monthly income card</td><td class="review">Review</td><td>AI</td><td>Dashboard/report logic exists; acceptance pending.</td></tr>
+<tr><td>S7-03</td><td>Monthly expense card</td><td class="review">Review</td><td>AI</td><td>Dashboard/report logic exists; acceptance pending.</td></tr>
+<tr><td>S7-04</td><td>Monthly donation card</td><td class="review">Review</td><td>AI</td><td>Dashboard/report logic exists; acceptance pending.</td></tr>
+<tr><td>S7-05</td><td>Pending approval card</td><td class="review">Review</td><td>AI</td><td>Pending summary logic exists in finance; dashboard acceptance pending.</td></tr>
+<tr><td>S7-06</td><td>Latest transactions section</td><td class="review">Review</td><td>AI</td><td>Dashboard/report sections appear implemented; not fully verified here.</td></tr>
+<tr><td>S7-07</td><td>Latest donations section</td><td class="review">Review</td><td>AI</td><td>Dashboard/report sections appear implemented; not fully verified here.</td></tr>
+<tr><td>S7-08</td><td>Upcoming schedules section</td><td class="review">Review</td><td>AI</td><td>Dashboard/schedule integration appears present; not fully verified here.</td></tr>
+<tr><td>S7-09</td><td>Upcoming events section</td><td class="review">Review</td><td>AI</td><td>Event integration appears present; not fully verified here.</td></tr>
+<tr><td>S7-10</td><td>Active announcements section</td><td class="review">Review</td><td>AI</td><td>Announcement integration appears present; not fully verified here.</td></tr>
+</tbody></table>
+<h2>Sprint 8 — Schedule Module</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S8-01</td><td>Schedule list page</td><td class="review">Review</td><td>AI</td><td>Schedule module exists in repo.</td></tr>
+<tr><td>S8-02</td><td>Create schedule form</td><td class="review">Review</td><td>AI</td><td>Prayer/service create routes and requests exist.</td></tr>
+<tr><td>S8-03</td><td>Edit schedule form</td><td class="review">Review</td><td>AI</td><td>Status/update flows exist; full edit acceptance not verified.</td></tr>
+<tr><td>S8-04</td><td>Delete schedule with confirm dialog</td><td class="done">Done</td><td>AI</td><td><code>ScheduleController::destroyPrayer</code> + <code>destroyService</code>, <code>schedules.destroy-prayer</code> + <code>schedules.destroy-service</code>, and shared <code>ConfirmDialog</code> implemented.</td></tr>
+<tr><td>S8-05</td><td>Filter schedule by type/date</td><td class="review">Review</td><td>AI</td><td>Needs explicit acceptance verification.</td></tr>
+<tr><td>S8-06</td><td>Upcoming schedule component</td><td class="review">Review</td><td>AI</td><td>Appears integrated in dashboard/public planning; not fully verified.</td></tr>
+</tbody></table>
+<h2>Sprint 9 — Event Module</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S9-01</td><td>Event list page</td><td class="review">Review</td><td>AI</td><td>Event admin page exists.</td></tr>
+<tr><td>S9-02</td><td>Create event form</td><td class="review">Review</td><td>AI</td><td>Event create flow exists.</td></tr>
+<tr><td>S9-03</td><td>Edit event form</td><td class="review">Review</td><td>AI</td><td>Event update/status flow exists.</td></tr>
+<tr><td>S9-04</td><td>Event detail page</td><td class="done">Done</td><td>AI</td><td><code>EventController::show</code> method and <code>resources/js/Pages/Admin/Events/Show.vue</code> created, linked via ActionMenu detail button in Events index.</td></tr>
+<tr><td>S9-05</td><td>Event status handling</td><td class="review">Review</td><td>AI</td><td>Published status used in public portal and admin flow.</td></tr>
+<tr><td>S9-06</td><td>Upcoming events dashboard integration</td><td class="review">Review</td><td>AI</td><td>Public/dashboard event integration appears implemented; acceptance pending.</td></tr>
+</tbody></table>
+<h2>Sprint 10 — Jamaah Module</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S10-01</td><td>Jamaah list page</td><td class="done">Done</td><td>AI</td><td>Jamaah list page exists: <code>resources/js/Pages/Admin/Jamaahs/Index.vue</code> + <code>JamaahController::index</code>.</td></tr>
+<tr><td>S10-02</td><td>Create jamaah form</td><td class="done">Done</td><td>AI</td><td>Create form integrated in Jamaah index page; <code>JamaahController::store</code> with validation.</td></tr>
+<tr><td>S10-03</td><td>Edit jamaah form</td><td class="done">Done</td><td>AI</td><td>Edit form integrated in Jamaah index page; <code>JamaahController::update</code> with permission gate.</td></tr>
+<tr><td>S10-04</td><td>Jamaah detail page</td><td class="done">Done</td><td>AI</td><td>Implemented <code>Show.vue</code> detail view with full data visualization.</td></tr>
+<tr><td>S10-05</td><td>Jamaah category filter</td><td class="done">Done</td><td>AI</td><td>Added <code>category</code> migration, updated model, and implemented filter in <code>Index.vue</code> and controller.</td></tr>
+<tr><td>S10-06</td><td>Mustahik sensitive data protection</td><td class="done">Done</td><td>AI</td><td>Implemented robust sensitive data masking rule in controller for <code>mustahik</code> category.</td></tr>
+</tbody></table>
+<h2>Sprint 11 — Asset & Document Module</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S11-01</td><td>Asset list page</td><td class="review">Review</td><td>AI</td><td>Asset module exists in repo.</td></tr>
+<tr><td>S11-02</td><td>Create asset form</td><td class="review">Review</td><td>AI</td><td>Asset create flow exists.</td></tr>
+<tr><td>S11-03</td><td>Edit asset form</td><td class="review">Review</td><td>AI</td><td>Asset status/update flow exists; full edit acceptance pending.</td></tr>
+<tr><td>S11-04</td><td>Asset detail page</td><td class="done">Done</td><td>AI</td><td><code>AssetController::show</code>, <code>assets.show</code> route, <code>Assets/Show.vue</code> implemented with detail view.</td></tr>
+<tr><td>S11-05</td><td>Asset condition summary</td><td class="review">Review</td><td>AI</td><td>Report aggregation for asset conditions exists.</td></tr>
+<tr><td>S11-06</td><td>Document list page</td><td class="review">Review</td><td>AI</td><td>Documents index page exists.</td></tr>
+<tr><td>S11-07</td><td>Upload/create document</td><td class="review">Review</td><td>AI</td><td>Upload/create flow exists with file validation.</td></tr>
+<tr><td>S11-08</td><td>Document detail/download</td><td class="done">Done</td><td>AI</td><td><code>DocumentController::show</code>/<code>download</code>, <code>Documents/Show.vue</code> with download button, action menu in index page.</td></tr>
+<tr><td>S11-09</td><td>Document permission protection</td><td class="done">Done</td><td>AI</td><td><code>document.delete</code> permission added to seeder, route separated into <code>document.delete</code> middleware group, <code>documents.destroy</code> route gated.</td></tr>
+</tbody></table>
+<h2>Sprint 12 — Announcement & Basic Reports</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S12-01</td><td>Announcement list page</td><td class="review">Review</td><td>AI</td><td>Announcement page exists.</td></tr>
+<tr><td>S12-02</td><td>Create announcement form</td><td class="review">Review</td><td>AI</td><td>Create flow exists.</td></tr>
+<tr><td>S12-03</td><td>Edit announcement form</td><td class="review">Review</td><td>AI</td><td>Update/status flow exists.</td></tr>
+<tr><td>S12-04</td><td>Publish/archive status</td><td class="review">Review</td><td>AI</td><td>Published status used by public portal.</td></tr>
+<tr><td>S12-05</td><td>Copy WhatsApp-ready text</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S12-06</td><td>Donation report page</td><td class="review">Review</td><td>AI</td><td>Reports module includes donation summary data; page completeness pending.</td></tr>
+<tr><td>S12-07</td><td>Asset report page</td><td class="review">Review</td><td>AI</td><td>Reports module includes asset condition data; page completeness pending.</td></tr>
+<tr><td>S12-08</td><td>Print-friendly report layout</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+</tbody></table>
+<h2>Sprint 13 — MVP Hardening</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S13-01</td><td>Run full manual MVP test</td><td class="backlog">Backlog</td><td>AI/User</td><td></td></tr>
+<tr><td>S13-02</td><td>Fix critical finance bugs</td><td class="done">Done</td><td>AI</td><td>Fixed critical SQL bug in Finance report export column querying.</td></tr>
+<tr><td>S13-03</td><td>Fix permission gaps</td><td class="done">Done</td><td>AI</td><td>Applied explicit permission checks for finance/donation status endpoints via middleware and controller blocks.</td></tr>
+<tr><td>S13-04</td><td>Improve mobile responsiveness</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S13-05</td><td>Improve loading/empty/error states</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S13-06</td><td>Run build/lint/test</td><td class="review">Review</td><td>AI</td><td>npm build passes; PHP syntax checks pass; full test/lint sweep not complete.</td></tr>
+<tr><td>S13-07</td><td>Prepare MVP release notes</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+</tbody></table>
+<h2>Sprint 14 — Public Portal Foundation</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S14-01</td><td>Public layout</td><td class="review">Review</td><td>AI</td><td>Public layout exists and builds.</td></tr>
+<tr><td>S14-02</td><td>Public home page</td><td class="review">Review</td><td>AI</td><td>Public home page exists.</td></tr>
+<tr><td>S14-03</td><td>Public mosque profile page</td><td class="review">Review</td><td>AI</td><td>Public profile page exists.</td></tr>
+<tr><td>S14-04</td><td>Public schedule page</td><td class="review">Review</td><td>AI</td><td>Public schedule page exists but still placeholder-grade.</td></tr>
+<tr><td>S14-05</td><td>Public events page</td><td class="review">Review</td><td>AI</td><td>Public events page exists.</td></tr>
+<tr><td>S14-06</td><td>Public announcements page</td><td class="review">Review</td><td>AI</td><td>Public announcements page exists.</td></tr>
+<tr><td>S14-07</td><td>Public contact section</td><td class="review">Review</td><td>AI</td><td>Public contact page exists.</td></tr>
+<tr><td>S14-08</td><td>Verify no private data exposure</td><td class="review">Review</td><td>AI</td><td>Code audit suggests aggregate-only direction, but privacy acceptance remains incomplete.</td></tr>
+</tbody></table>
+<h2>Sprint 15 — Public Donation & Transparency</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S15-01</td><td>Public donation page</td><td class="review">Review</td><td>AI</td><td>Public donation page exists.</td></tr>
+<tr><td>S15-02</td><td>Donation instruction/settings display</td><td class="review">Review</td><td>AI</td><td>UI exists, but controller currently returns placeholder/empty settings.</td></tr>
+<tr><td>S15-03</td><td>Public financial summary page</td><td class="review">Review</td><td>AI</td><td>Public finance report exists.</td></tr>
+<tr><td>S15-04</td><td>Income/expense aggregate by category</td><td class="backlog">Backlog</td><td>AI</td><td>Public report currently returns empty category breakdown arrays.</td></tr>
+<tr><td>S15-05</td><td>Hide donor private data</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S15-06</td><td>Hide proof/internal finance notes</td><td class="review">Review</td><td>AI</td><td>Public report uses aggregate data; final privacy verification still needed.</td></tr>
+</tbody></table>
+<h2>Sprint 16 — Settings Module</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S16-01</td><td>Mosque profile settings</td><td class="review">Review</td><td>AI</td><td>Settings controller/page exists for basic mosque profile fields.</td></tr>
+<tr><td>S16-02</td><td>Donation account settings</td><td class="backlog">Backlog</td><td>AI</td><td>Public donation page expects this, but settings flow is not clearly implemented.</td></tr>
+<tr><td>S16-03</td><td>Public portal visibility settings</td><td class="review">Review</td><td>AI</td><td>Settings toggles exist for public portal visibility.</td></tr>
+<tr><td>S16-04</td><td>Report settings</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S16-05</td><td>Settings permission protection</td><td class="backlog">Backlog</td><td>AI</td><td>Still role-based, not permission-grade.</td></tr>
+</tbody></table>
+<h2>Sprint 17 — Zakat Module</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S17-01</td><td>Zakat migrations/models</td><td class="done">Done</td><td>AI</td><td>Zakat tables/models exist and migrations are applied.</td></tr>
+<tr><td>S17-02</td><td>Zakat dashboard</td><td class="review">Review</td><td>AI</td><td>Zakat index/summary page exists.</td></tr>
+<tr><td>S17-03</td><td>Input zakat payment</td><td class="review">Review</td><td>AI</td><td>Zakat muzakki input flow exists.</td></tr>
+<tr><td>S17-04</td><td>Muzakki list</td><td class="review">Review</td><td>AI</td><td>Muzakki listing exists.</td></tr>
+<tr><td>S17-05</td><td>Mustahik list with privacy</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S17-06</td><td>Zakat distribution records</td><td class="review">Review</td><td>AI</td><td>Distribution records flow exists.</td></tr>
+<tr><td>S17-07</td><td>Zakat report</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+</tbody></table>
+<h2>Sprint 18 — Wakaf Module</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S18-01</td><td>Wakaf migrations/models</td><td class="done">Done</td><td>AI</td><td>Wakaf tables/models exist and migrations are applied.</td></tr>
+<tr><td>S18-02</td><td>Wakaf list page</td><td class="review">Review</td><td>AI</td><td>Wakaf index page exists.</td></tr>
+<tr><td>S18-03</td><td>Create wakaf record</td><td class="review">Review</td><td>AI</td><td>Wakaf create flow exists.</td></tr>
+<tr><td>S18-04</td><td>Wakif data handling</td><td class="review">Review</td><td>AI</td><td>Wakif data flow exists.</td></tr>
+<tr><td>S18-05</td><td>Wakaf purpose/status tracking</td><td class="review">Review</td><td>AI</td><td>Status/purpose tracking exists; acceptance pending.</td></tr>
+<tr><td>S18-06</td><td>Wakaf report</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+</tbody></table>
+<h2>Sprint 19 — Qurban Module Part 1</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S19-01</td><td>Qurban participant migrations/models</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S19-02</td><td>Participant list page</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S19-03</td><td>Create participant form</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S19-04</td><td>Animal type selection</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S19-05</td><td>Sapi 1/7 share logic</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S19-06</td><td>Payment tracking</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S19-07</td><td>Link payment to finance if required</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+</tbody></table>
+<h2>Sprint 20 — Qurban Module Part 2</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S20-01</td><td>Qurban animal migrations/models</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S20-02</td><td>Animal list page</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S20-03</td><td>Assign animal to sapi group</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S20-04</td><td>Slaughter status tracking</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S20-05</td><td>Distribution tracking</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S20-06</td><td>Coupon code generation</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S20-07</td><td>Print qurban coupon</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S20-08</td><td>Qurban report</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+</tbody></table>
+<h2>Sprint 21 — Export, Audit Log, Production Readiness</h2>
+<table><thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead><tbody>
+<tr><td>S21-01</td><td>Finance report export</td><td class="done">Done</td><td>AI</td><td>CSV export verified and critical bug querying non-existent column fixed.</td></tr>
+<tr><td>S21-02</td><td>Donation report export</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S21-03</td><td>Audit log migration/model</td><td class="done">Done</td><td>AI</td><td>Audit log table/model exist.</td></tr>
+<tr><td>S21-04</td><td>Audit finance actions</td><td class="review">Review</td><td>AI</td><td>Finance controller writes audit logs.</td></tr>
+<tr><td>S21-05</td><td>Audit donation actions</td><td class="review">Review</td><td>AI</td><td>Donation controller writes audit logs.</td></tr>
+<tr><td>S21-06</td><td>Add/improve tests</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S21-07</td><td>Security review</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+<tr><td>S21-08</td><td>Final UI polish</td><td class="backlog">Backlog</td><td>AI</td><td></td></tr>
+</tbody></table>
+</div></body></html>
