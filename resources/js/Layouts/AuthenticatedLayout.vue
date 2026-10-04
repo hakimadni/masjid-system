@@ -67,7 +67,7 @@ const expandedGroups = ref(new Set())
               </div>
             </div>
 
-            <div class="mt-5 rounded-2xl border border-emerald-100 bg-emerald-50/80 px-4 py-3">
+            <div class="mt-5 rounded-2xl border border-emerald-200/50 bg-gradient-to-br from-emerald-50 to-teal-50/50 px-4 py-3 shadow-inner">
               <p class="text-xs font-medium uppercase tracking-[0.2em] text-emerald-700">Ruang Kerja</p>
               <p class="mt-1 text-sm leading-6 text-slate-600">Operasional masjid yang rapi, tenang, dan siap dipakai cepat setiap hari.</p>
             </div>
@@ -191,7 +191,7 @@ const expandedGroups = ref(new Set())
 
       <div class="flex min-h-screen min-w-0 flex-1 flex-col px-3 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-4 pt-3 sm:px-4 lg:px-6">
         <header class="sticky top-3 z-30">
-          <div class="rounded-[1.75rem] border border-white/70 bg-white/80 shadow-lg shadow-slate-950/5 backdrop-blur">
+          <div class="rounded-[2rem] border border-emerald-900/5 bg-white/80 shadow-xl shadow-emerald-900/5 backdrop-blur-xl ring-1 ring-white">
             <div class="flex items-center gap-3 px-4 py-3 sm:px-5 lg:px-6">
               <div class="flex flex-1 items-center gap-3">
                 <Button variant="outline" size="icon" class="xl:hidden" @click="mobileOpen = true">
