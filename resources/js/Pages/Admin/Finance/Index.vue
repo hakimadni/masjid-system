@@ -146,9 +146,7 @@ const submitReject = () => {
         </template>
       </PageHeader>
 
-      <div v-if="flash.success" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-        {{ flash.success }}
-      </div>
+      
 
       <div class="flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-2 xl:grid-cols-4 snap-x snap-mandatory hide-scrollbar">
         <div class="min-w-[85vw] sm:min-w-[280px] snap-center shrink-0 md:min-w-0 md:w-auto"><StatCard

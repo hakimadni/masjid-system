@@ -94,9 +94,7 @@ const handleAction = (doc, key) => {
   <AuthenticatedLayout title="Dokumen">
 
     <div class="space-y-6">
-      <div v-if="flash.success" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-        {{ flash.success }}
-      </div>
+      
 
       <PageHeader title="Dokumen" description="Kelola surat, proposal, LPJ, SK, dan arsip masjid." />
 

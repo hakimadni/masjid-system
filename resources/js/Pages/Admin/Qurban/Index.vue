@@ -135,9 +135,7 @@ const deleteSaving = (savingId) => {
   <AuthenticatedLayout title="Qurban">
 
     <div class="space-y-6">
-      <div v-if="flash.success" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-        {{ flash.success }}
-      </div>
+      
 
       <div class="grid gap-4 md:grid-cols-5">
         <StatCard title="Total Rekening" :value="summary.total_accounts" />

@@ -75,9 +75,7 @@ const confirmDelete = () => {
     <div class="space-y-6">
       <PageHeader title="Media" description="Kelola video, audio, gambar, dan dokumen media untuk portal masjid." />
 
-      <div v-if="flash.success" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-        {{ flash.success }}
-      </div>
+      
 
       <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard title="Total Media" :value="media.total" />

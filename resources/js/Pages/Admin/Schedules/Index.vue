@@ -168,9 +168,7 @@ const handleServiceAction = (item, key) => {
 
   <AuthenticatedLayout title="Jadwal">
     <div class="space-y-6">
-      <div v-if="flash.success" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-        {{ flash.success }}
-      </div>
+      
 
       <PageHeader title="Jadwal" description="Kelola jadwal shalat, khatib, dan petugas operasional masjid." />
       <div class="flex gap-2 mb-4">

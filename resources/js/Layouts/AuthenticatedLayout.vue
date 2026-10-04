@@ -17,6 +17,7 @@ import {
 } from "@/lib/adminNavigation"
 
 import MobileBottomNav from "@/Components/MobileBottomNav.vue"
+import GlobalToast from "@/Components/ui/toast/GlobalToast.vue"
 
 const props = defineProps({
   title: { type: String, default: "" },

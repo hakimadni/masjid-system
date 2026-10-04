@@ -115,9 +115,7 @@ const handleAction = (item, key) => {
 
   <AuthenticatedLayout title="Kegiatan">
     <div class="space-y-6">
-      <div v-if="flash.success" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-        {{ flash.success }}
-      </div>
+      
 
       <PageHeader title="Kegiatan" description="Kelola agenda masjid, status publikasi, dan PIC kegiatan." />
 
