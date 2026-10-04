@@ -16,7 +16,32 @@ defineProps({ animals: Object })
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
         <div class="p-6">
-          <table class="w-full text-left text-sm">
+          
+          <!-- Mobile List -->
+          <div class="block md:hidden space-y-4 mb-6">
+            <div v-for="animal in animals.data" :key="animal.id" class="group relative flex flex-col overflow-hidden rounded-3xl border border-emerald-900/5 bg-white shadow-lg shadow-emerald-900/5 ring-1 ring-slate-100/50 p-4 active:scale-95 transition-all">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="font-bold text-slate-800 text-base leading-tight">Hewan #{{ animal.id }} - <span class="capitalize">{{ animal.type }}</span></p>
+                  <p class="text-xs text-slate-500 font-medium mt-1">{{ animal.weight }} kg • Rp {{ Number(animal.price).toLocaleString('id-ID') }}</p>
+                </div>
+                <div class="text-right">
+                  <AnimalStatusBadge :status="animal.status" />
+                </div>
+              </div>
+              <div class="mt-4 flex gap-2">
+                <Link :href="route('animals.show', animal.id)" class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-emerald-100 text-emerald-700 font-semibold text-sm rounded-xl hover:bg-emerald-200">
+                  Lihat Detail
+                </Link>
+              </div>
+            </div>
+            
+            <div v-if="!animals.data || animals.data.length === 0" class="text-center py-8 text-slate-500">
+              Belum ada data hewan
+            </div>
+          </div>
+
+          <table class="hidden md:table w-full text-left text-sm">
             <thead>
               <tr class="border-b-2 border-slate-200">
                 <th class="px-4 py-3 font-semibold">No</th>

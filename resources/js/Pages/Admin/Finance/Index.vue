@@ -67,8 +67,8 @@ const filteredCategories = computed(() =>
 )
 
 const summaryCards = computed(() => [
-  { title: "Total Pemasukan", value: props.summary.income_total, type: "currency" },
-  { title: "Total Pengeluaran", value: props.summary.expense_total, type: "currency" },
+  { title: "Total Uang Masuk", value: props.summary.income_total, type: "currency" },
+  { title: "Total Uang Keluar", value: props.summary.expense_total, type: "currency" },
   { title: "Transaksi Pending", value: props.summary.pending_total, type: "plain" },
   { title: "Total Catatan", value: props.summary.records_total, type: "plain" },
 ])
@@ -148,8 +148,8 @@ const submitReject = () => {
         {{ flash.success }}
       </div>
 
-      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard
+      <div class="flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-2 xl:grid-cols-4 snap-x snap-mandatory hide-scrollbar">
+        <div class="min-w-[85vw] sm:min-w-[280px] snap-center shrink-0 md:min-w-0 md:w-auto"><StatCard
           v-for="card in summaryCards"
           :key="card.title"
           :title="card.title"
@@ -158,7 +158,7 @@ const submitReject = () => {
           <template v-if="card.type === 'currency'" #value>
             <MoneyDisplay :value="card.value" />
           </template>
-        </StatCard>
+        </StatCard></div>
       </div>
 
       <Card class="p-5">
@@ -177,8 +177,8 @@ const submitReject = () => {
           <Input v-model="filterForm.search" placeholder="Cari judul / referensi" />
           <Select v-model="filterForm.entry_type">
             <option value="">Semua jenis</option>
-            <option value="income">Pemasukan</option>
-            <option value="expense">Pengeluaran</option>
+            <option value="income">Uang Masuk</option>
+            <option value="expense">Uang Keluar</option>
           </Select>
           <Select v-model="filterForm.status">
             <option value="">Semua status</option>
@@ -212,8 +212,8 @@ const submitReject = () => {
           <div>
             <label class="mb-1.5 block text-sm font-medium text-slate-900">Jenis</label>
             <Select v-model="createForm.entry_type">
-              <option value="income">Pemasukan</option>
-              <option value="expense">Pengeluaran</option>
+              <option value="income">Uang Masuk</option>
+              <option value="expense">Uang Keluar</option>
             </Select>
             <p v-if="errorFor('entry_type')" class="mt-1 text-xs text-rose-600">{{ errorFor("entry_type") }}</p>
           </div>
@@ -293,16 +293,30 @@ const submitReject = () => {
           <template v-else>
             <DataTable v-if="financeEntries.data.length" :data="financeEntries.data">
               <template #mobile-card="{ item }">
-                <div class="flex items-center justify-between border-b border-slate-100 bg-white p-4 rounded-xl shadow-sm mb-2">
-                  <div>
-                    <p class="font-medium text-slate-900">{{ item.title }}</p>
-                    <p class="text-xs text-slate-500">{{ item.category }} • {{ item.transaction_date }}</p>
-                    <p class="mt-1 font-medium text-slate-900"><MoneyDisplay :value="item.amount" /></p>
-                    <p class="text-xs text-slate-500">{{ item.entry_type === 'income' ? 'Pemasukan' : 'Pengeluaran' }}</p>
-                  </div>
-                  <div class="flex flex-col items-end gap-2">
-                    <StatusBadge :status="item.status" />
-                    <ActionMenu :items="actionItems(item)" @select="handleAction(item, $event)" />
+                <div class="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-emerald-900/5 bg-white shadow-lg shadow-emerald-900/5 ring-1 ring-slate-100/50 mb-3 p-4 transition-all active:scale-95">
+                  <div class="flex items-center justify-between">
+                     <div class="flex items-center gap-3">
+                        <div :class="[
+                           'flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl',
+                           item.entry_type === 'income' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'
+                        ]">
+                          <svg v-if="item.entry_type === 'income'" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                          <svg v-else class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
+                        </div>
+                        <div class="min-w-0 pr-2">
+                          <p class="font-bold text-slate-800 text-sm leading-tight truncate">{{ item.title }}</p>
+                          <p class="text-xs text-slate-500 font-medium mt-1 truncate">{{ item.category }} • {{ item.transaction_date }}</p>
+                        </div>
+                     </div>
+                     <div class="text-right shrink-0">
+                        <p :class="['font-bold whitespace-nowrap text-sm', item.entry_type === 'income' ? 'text-emerald-600' : 'text-slate-800']">
+                          {{ item.entry_type === 'income' ? '+' : '-' }} <MoneyDisplay :value="item.amount" />
+                        </p>
+                        <div class="flex justify-end mt-1 items-center gap-1">
+                          <StatusBadge size="sm" :status="item.status" />
+                          <ActionMenu :items="actionItems(item)" @select="handleAction(item, $event)" />
+                        </div>
+                     </div>
                   </div>
                 </div>
               </template>
@@ -326,7 +340,7 @@ const submitReject = () => {
                   <td class="px-4 py-3">{{ item.category }}</td>
                   <td class="px-4 py-3">
                     <p class="font-medium text-slate-900"><MoneyDisplay :value="item.amount" /></p>
-                    <p class="text-xs text-slate-500">{{ item.entry_type === "income" ? "Pemasukan" : "Pengeluaran" }}</p>
+                    <p class="text-xs text-slate-500">{{ item.entry_type === "income" ? "Uang Masuk" : "Uang Keluar" }}</p>
                   </td>
                   <td class="px-4 py-3"><StatusBadge :status="item.status" /></td>
                   <td class="px-4 py-3 text-right">
