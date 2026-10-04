@@ -1,4 +1,6 @@
 <script setup>
+import Dialog from "@/Components/ui/dialog/Dialog.vue"
+import MobileFab from "@/Components/MobileFab.vue"
 import { computed, ref } from "vue"
 import { Head, router, useForm, usePage } from "@inertiajs/vue3"
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue"
@@ -30,6 +32,7 @@ const filterForm = useForm({
   status: props.filters.status ?? "",
 })
 
+const createDialogOpen = ref(false)
 const createForm = useForm({
   title: "",
   content: "",
@@ -114,43 +117,7 @@ const handleAction = (item, key) => {
         </div>
       </Card>
 
-      <Card class="p-5">
-        <div>
-          <p class="text-sm font-semibold text-slate-900">Buat Pengumuman Baru</p>
-          <p class="mt-1 text-sm text-slate-500">Gunakan draft untuk review internal, lalu publish saat siap ditampilkan ke admin dashboard.</p>
-        </div>
-
-        <div class="mt-4 grid gap-3 md:grid-cols-2">
-          <div class="md:col-span-2">
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Judul pengumuman</label>
-            <Input v-model="createForm.title" placeholder="Perubahan jadwal kajian malam Jumat" />
-            <p v-if="errorFor('title')" class="mt-1 text-xs text-rose-600">{{ errorFor("title") }}</p>
-          </div>
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Status</label>
-            <Select v-model="createForm.status">
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="archived">Archived</option>
-            </Select>
-            <p v-if="errorFor('status')" class="mt-1 text-xs text-rose-600">{{ errorFor("status") }}</p>
-          </div>
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Waktu publish</label>
-            <Input v-model="createForm.published_at" type="datetime-local" />
-            <p v-if="errorFor('published_at')" class="mt-1 text-xs text-rose-600">{{ errorFor("published_at") }}</p>
-          </div>
-          <div class="md:col-span-2">
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Isi pengumuman</label>
-            <Textarea v-model="createForm.content" :rows="5" placeholder="Tuliskan informasi yang perlu diketahui pengurus atau jamaah." />
-            <p v-if="errorFor('content')" class="mt-1 text-xs text-rose-600">{{ errorFor("content") }}</p>
-          </div>
-        </div>
-
-        <div class="mt-3 flex justify-end">
-          <Button :disabled="createForm.processing" @click="submitCreate">{{ createForm.processing ? "Menyimpan..." : "Simpan Pengumuman" }}</Button>
-        </div>
-      </Card>
+      
 
       <Card class="p-0">
         <div class="border-b border-slate-200 px-5 py-4">
@@ -196,5 +163,47 @@ const handleAction = (item, key) => {
         </div>
       </Card>
     </div>
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
+        <div>
+          <p class="text-sm font-semibold text-slate-900">Buat Pengumuman Baru</p>
+          <p class="mt-1 text-sm text-slate-500">Gunakan draft untuk review internal, lalu publish saat siap ditampilkan ke admin dashboard.</p>
+        </div>
+
+        <div class="mt-4 grid gap-3 md:grid-cols-2">
+          <div class="md:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Judul pengumuman</label>
+            <Input v-model="createForm.title" placeholder="Perubahan jadwal kajian malam Jumat" />
+            <p v-if="errorFor('title')" class="mt-1 text-xs text-rose-600">{{ errorFor("title") }}</p>
+          </div>
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Status</label>
+            <Select v-model="createForm.status">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="archived">Archived</option>
+            </Select>
+            <p v-if="errorFor('status')" class="mt-1 text-xs text-rose-600">{{ errorFor("status") }}</p>
+          </div>
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Waktu publish</label>
+            <Input v-model="createForm.published_at" type="datetime-local" />
+            <p v-if="errorFor('published_at')" class="mt-1 text-xs text-rose-600">{{ errorFor("published_at") }}</p>
+          </div>
+          <div class="md:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Isi pengumuman</label>
+            <Textarea v-model="createForm.content" :rows="5" placeholder="Tuliskan informasi yang perlu diketahui pengurus atau jamaah." />
+            <p v-if="errorFor('content')" class="mt-1 text-xs text-rose-600">{{ errorFor("content") }}</p>
+          </div>
+        </div>
+
+        <div class="mt-3 flex justify-end">
+          <Button :disabled="createForm.processing" @click="submitCreate">{{ createForm.processing ? "Menyimpan..." : "Simpan Pengumuman" }}</Button>
+        </div>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>

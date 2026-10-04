@@ -1,4 +1,6 @@
 <script setup>
+import Dialog from "@/Components/ui/dialog/Dialog.vue"
+import MobileFab from "@/Components/MobileFab.vue"
 import { computed, ref } from "vue"
 import { Head, router, useForm, usePage } from "@inertiajs/vue3"
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue"
@@ -35,6 +37,7 @@ const filterForm = useForm({
   category: props.filters.category ?? "",
 })
 
+const createDialogOpen = ref(false)
 const createForm = useForm({
   name: "",
   category: "",
@@ -144,62 +147,7 @@ const handleAction = (item, key) => {
         </div>
       </Card>
 
-      <Card class="p-5">
-        <div>
-          <p class="text-sm font-semibold text-slate-900">Tambah Inventaris</p>
-          <p class="mt-1 text-sm text-slate-500">Simpan aset utama masjid agar marbot dan pengurus punya sumber data yang sama.</p>
-        </div>
-        <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <div class="xl:col-span-2">
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama barang</label>
-            <Input v-model="createForm.name" placeholder="Karpet utama" />
-            <p v-if="errorFor('name')" class="mt-1 text-xs text-rose-600">{{ errorFor("name") }}</p>
-          </div>
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Kategori</label>
-            <Input v-model="createForm.category" placeholder="Perlengkapan ibadah" />
-            <p v-if="errorFor('category')" class="mt-1 text-xs text-rose-600">{{ errorFor("category") }}</p>
-          </div>
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Lokasi</label>
-            <Input v-model="createForm.location" placeholder="Ruang shalat utama" />
-            <p v-if="errorFor('location')" class="mt-1 text-xs text-rose-600">{{ errorFor("location") }}</p>
-          </div>
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Jumlah</label>
-            <Input v-model="createForm.quantity" type="number" min="1" />
-            <p v-if="errorFor('quantity')" class="mt-1 text-xs text-rose-600">{{ errorFor("quantity") }}</p>
-          </div>
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Kondisi</label>
-            <Select v-model="createForm.condition">
-              <option value="baik">Baik</option>
-              <option value="perlu_perbaikan">Perlu Perbaikan</option>
-              <option value="rusak">Rusak</option>
-            </Select>
-            <p v-if="errorFor('condition')" class="mt-1 text-xs text-rose-600">{{ errorFor("condition") }}</p>
-          </div>
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Status</label>
-            <Select v-model="createForm.status">
-              <option value="active">Aktif</option>
-              <option value="maintenance">Perawatan</option>
-              <option value="archived">Arsip</option>
-            </Select>
-            <p v-if="errorFor('status')" class="mt-1 text-xs text-rose-600">{{ errorFor("status") }}</p>
-          </div>
-        </div>
-        <div class="mt-3 grid gap-3 md:grid-cols-[1fr_auto]">
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Catatan</label>
-            <Textarea v-model="createForm.notes" :rows="3" placeholder="Jadwal perawatan, vendor, atau catatan kondisi." />
-            <p v-if="errorFor('notes')" class="mt-1 text-xs text-rose-600">{{ errorFor("notes") }}</p>
-          </div>
-          <div class="flex items-end">
-            <Button :disabled="createForm.processing" @click="submitCreate">{{ createForm.processing ? "Menyimpan..." : "Simpan Inventaris" }}</Button>
-          </div>
-        </div>
-      </Card>
+      
 
       <Card class="p-0">
         <div class="border-b border-slate-200 px-5 py-4">
@@ -259,5 +207,66 @@ const handleAction = (item, key) => {
         @confirm="destroyAsset"
       />
     </div>
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
+        <div>
+          <p class="text-sm font-semibold text-slate-900">Tambah Inventaris</p>
+          <p class="mt-1 text-sm text-slate-500">Simpan aset utama masjid agar marbot dan pengurus punya sumber data yang sama.</p>
+        </div>
+        <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <div class="xl:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama barang</label>
+            <Input v-model="createForm.name" placeholder="Karpet utama" />
+            <p v-if="errorFor('name')" class="mt-1 text-xs text-rose-600">{{ errorFor("name") }}</p>
+          </div>
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Kategori</label>
+            <Input v-model="createForm.category" placeholder="Perlengkapan ibadah" />
+            <p v-if="errorFor('category')" class="mt-1 text-xs text-rose-600">{{ errorFor("category") }}</p>
+          </div>
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Lokasi</label>
+            <Input v-model="createForm.location" placeholder="Ruang shalat utama" />
+            <p v-if="errorFor('location')" class="mt-1 text-xs text-rose-600">{{ errorFor("location") }}</p>
+          </div>
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Jumlah</label>
+            <Input v-model="createForm.quantity" type="number" min="1" />
+            <p v-if="errorFor('quantity')" class="mt-1 text-xs text-rose-600">{{ errorFor("quantity") }}</p>
+          </div>
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Kondisi</label>
+            <Select v-model="createForm.condition">
+              <option value="baik">Baik</option>
+              <option value="perlu_perbaikan">Perlu Perbaikan</option>
+              <option value="rusak">Rusak</option>
+            </Select>
+            <p v-if="errorFor('condition')" class="mt-1 text-xs text-rose-600">{{ errorFor("condition") }}</p>
+          </div>
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Status</label>
+            <Select v-model="createForm.status">
+              <option value="active">Aktif</option>
+              <option value="maintenance">Perawatan</option>
+              <option value="archived">Arsip</option>
+            </Select>
+            <p v-if="errorFor('status')" class="mt-1 text-xs text-rose-600">{{ errorFor("status") }}</p>
+          </div>
+        </div>
+        <div class="mt-3 grid gap-3 md:grid-cols-[1fr_auto]">
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Catatan</label>
+            <Textarea v-model="createForm.notes" :rows="3" placeholder="Jadwal perawatan, vendor, atau catatan kondisi." />
+            <p v-if="errorFor('notes')" class="mt-1 text-xs text-rose-600">{{ errorFor("notes") }}</p>
+          </div>
+          <div class="flex items-end">
+            <Button :disabled="createForm.processing" @click="submitCreate">{{ createForm.processing ? "Menyimpan..." : "Simpan Inventaris" }}</Button>
+          </div>
+        </div>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>

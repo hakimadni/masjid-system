@@ -104,41 +104,7 @@ const submitDistribution = () => {
       </div>
 
       <!-- Muzakki List -->
-      <Card>
-        <CardHeader class="flex flex-row items-center justify-between">
-          <CardTitle>Muzakki (Pembayar Zakat)</CardTitle>
-          <Button @click="showMuzakkiDialog = true" size="sm">Tambah Muzakki</Button>
-        </CardHeader>
-        <CardContent>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="border-b">
-                  <th class="text-left py-2">Nama</th>
-                  <th class="text-left py-2">Tipe</th>
-                  <th class="text-right py-2">Jumlah (Rp)</th>
-                  <th class="text-right py-2">Beras (kg)</th>
-                  <th class="text-center py-2">Status</th>
-                  <th class="text-center py-2">Tanggal</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in muzakki" :key="item.id" class="border-b">
-                  <td class="py-2">{{ item.name }}</td>
-                  <td class="py-2 capitalize">{{ item.zakat_type }}</td>
-                  <td class="py-2 text-right">{{ formatCurrency(item.money_amount) }}</td>
-                  <td class="py-2 text-right">{{ item.rice_amount }}</td>
-                  <td class="py-2 text-center capitalize">{{ item.status }}</td>
-                  <td class="py-2 text-center">{{ item.payment_date }}</td>
-                </tr>
-                <tr v-if="!muzakki.length">
-                  <td colspan="6" class="py-8 text-center text-slate-500">Belum ada data muzakki</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      
 
       <!-- Mustahik & Distribution -->
       <div class="grid md:grid-cols-2 gap-6">
@@ -193,5 +159,45 @@ const submitDistribution = () => {
         </form>
       </Dialog>
     </div>
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
+        <CardHeader class="flex flex-row items-center justify-between">
+          <CardTitle>Muzakki (Pembayar Zakat)</CardTitle>
+          <Button @click="showMuzakkiDialog = true" size="sm">Tambah Muzakki</Button>
+        </CardHeader>
+        <CardContent>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b">
+                  <th class="text-left py-2">Nama</th>
+                  <th class="text-left py-2">Tipe</th>
+                  <th class="text-right py-2">Jumlah (Rp)</th>
+                  <th class="text-right py-2">Beras (kg)</th>
+                  <th class="text-center py-2">Status</th>
+                  <th class="text-center py-2">Tanggal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in muzakki" :key="item.id" class="border-b">
+                  <td class="py-2">{{ item.name }}</td>
+                  <td class="py-2 capitalize">{{ item.zakat_type }}</td>
+                  <td class="py-2 text-right">{{ formatCurrency(item.money_amount) }}</td>
+                  <td class="py-2 text-right">{{ item.rice_amount }}</td>
+                  <td class="py-2 text-center capitalize">{{ item.status }}</td>
+                  <td class="py-2 text-center">{{ item.payment_date }}</td>
+                </tr>
+                <tr v-if="!muzakki.length">
+                  <td colspan="6" class="py-8 text-center text-slate-500">Belum ada data muzakki</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>

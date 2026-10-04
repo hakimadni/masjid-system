@@ -1,4 +1,6 @@
 <script setup>
+import Dialog from "@/Components/ui/dialog/Dialog.vue"
+import MobileFab from "@/Components/MobileFab.vue"
 import PaymentBadge from "@/Components/qurban/PaymentBadge.vue"
 import { computed, reactive, ref } from "vue"
 import { Head, Link, useForm, usePage } from "@inertiajs/vue3"
@@ -21,6 +23,7 @@ const props = defineProps({
 const page = usePage()
 const flash = computed(() => page.props.flash ?? {})
 
+const createDialogOpen = ref(false)
 const createForm = useForm({
   user_id: "",
   target_amount: "",
@@ -144,28 +147,7 @@ const deleteSaving = (savingId) => {
         <StatCard title="Rata-rata Progress" :value="`${Number(summary.avg_progress || 0).toFixed(1)}%`" />
       </div>
 
-      <Card class="p-5">
-        <p class="text-sm font-medium text-slate-700">Buat Tabungan Baru</p>
-
-        <div class="mt-3 flex flex-wrap gap-2">
-          <Button v-for="item in quickTargets" :key="item.label" variant="outline" size="sm" @click="chooseQuickTarget(item.value)">
-            {{ item.label }}
-          </Button>
-        </div>
-
-        <div class="mt-4 grid gap-3 md:grid-cols-4">
-          <Select v-model="createForm.user_id">
-            <option disabled value="">Pilih User</option>
-            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
-          </Select>
-          <Input v-model="createForm.target_amount" placeholder="Target Amount (IDR)" />
-          <Select v-model="createForm.status">
-            <option value="active">Aktif</option>
-            <option value="cancelled">Dibatalkan</option>
-          </Select>
-          <Button @click="submitCreate">Simpan</Button>
-        </div>
-      </Card>
+      
 
       <DataTable>
         <thead class="bg-slate-50 text-xs uppercase text-slate-500">
@@ -267,5 +249,32 @@ const deleteSaving = (savingId) => {
         <p v-else class="mt-3 text-xs text-slate-400">Belum ada peserta yang terhubung ke tabungan ini.</p>
       </Card>
     </div>
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
+        <p class="text-sm font-medium text-slate-700">Buat Tabungan Baru</p>
+
+        <div class="mt-3 flex flex-wrap gap-2">
+          <Button v-for="item in quickTargets" :key="item.label" variant="outline" size="sm" @click="chooseQuickTarget(item.value)">
+            {{ item.label }}
+          </Button>
+        </div>
+
+        <div class="mt-4 grid gap-3 md:grid-cols-4">
+          <Select v-model="createForm.user_id">
+            <option disabled value="">Pilih User</option>
+            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+          </Select>
+          <Input v-model="createForm.target_amount" placeholder="Target Amount (IDR)" />
+          <Select v-model="createForm.status">
+            <option value="active">Aktif</option>
+            <option value="cancelled">Dibatalkan</option>
+          </Select>
+          <Button @click="submitCreate">Simpan</Button>
+        </div>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>

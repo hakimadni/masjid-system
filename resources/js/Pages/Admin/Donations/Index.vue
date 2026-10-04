@@ -14,6 +14,7 @@ import Textarea from "@/Components/ui/textarea/Textarea.vue"
 import StatusBadge from "@/Components/ui/status/StatusBadge.vue"
 import ActionMenu from "@/Components/ui/dropdown/ActionMenu.vue"
 import PageHeader from "@/Components/ui/page/PageHeader.vue"
+import Dialog from "@/Components/ui/dialog/Dialog.vue"
 import ConfirmDialog from "@/Components/ui/dialog/ConfirmDialog.vue"
 import MobileFab from "@/Components/MobileFab.vue"
 
@@ -37,6 +38,7 @@ const filterForm = useForm({
   end_date: props.filters.end_date ?? "",
 })
 
+const createDialogOpen = ref(false)
 const createForm = useForm({
   donor_name: "",
   phone: "",
@@ -73,7 +75,7 @@ const resetFilters = () => {
   applyFilters()
 }
 
-const submitCreate = () => createForm.post(route("donations.store"), { preserveScroll: true })
+const submitCreate = () => createForm.post(route("donations.store"), { preserveScroll: true, onSuccess: () => { createDialogOpen.value = false; createForm.reset() } })
 const updateStatus = (id, status) =>
   useForm({ status }).patch(route("donations.update-status", id), { preserveScroll: true })
 
@@ -190,7 +192,103 @@ const submitReject = () => {
         </div>
       </Card>
 
-      <Card id="create-form" class="p-5">
+      
+
+      <Card class="p-0">
+        <div class="border-b border-slate-200 px-5 py-4">
+          <p class="text-sm font-semibold text-slate-900">Daftar Donasi</p>
+        </div>
+
+        <div class="p-5">
+          <TableSkeleton v-if="loadingTable" :rows="6" :columns="5" />
+
+          <template v-else>
+            <DataTable v-if="donations.data.length" :data="donations.data">
+              <template #mobile-card="{ item }">
+                <div class="flex items-center justify-between border-b border-slate-100 bg-white p-4 rounded-xl shadow-sm mb-2">
+                  <div>
+                    <p class="font-medium text-slate-900">{{ item.donor_name }}</p>
+                    <p class="text-xs text-slate-500">{{ item.campaign }} • {{ item.donation_date }}</p>
+                    <p class="mt-1 font-medium text-slate-900">{{ formatCurrency(item.amount) }}</p>
+                  </div>
+                  <div class="flex flex-col items-end gap-2">
+                    <StatusBadge :status="item.status" />
+                    <ActionMenu :items="actionItems(item)" @select="handleAction(item, $event)" />
+                  </div>
+                </div>
+              </template>
+              <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+                <tr>
+                  <th class="px-4 py-3 text-left">Donatur</th>
+                  <th class="px-4 py-3 text-left">Program</th>
+                  <th class="px-4 py-3 text-left">Nominal</th>
+                  <th class="px-4 py-3 text-left">Status</th>
+                  <th class="px-4 py-3 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in donations.data" :key="item.id" class="border-t border-slate-100">
+                  <td class="px-4 py-3">
+                    <p class="font-medium text-slate-900">{{ item.donor_name }}</p>
+                    <p class="text-xs text-slate-500">{{ item.phone || "-" }} • {{ item.donation_date }}</p>
+                  </td>
+                  <td class="px-4 py-3">
+                    <p>{{ item.campaign }}</p>
+                    <p class="text-xs uppercase text-slate-500">{{ item.method }}</p>
+                  </td>
+                  <td class="px-4 py-3">
+                    <p class="font-medium text-slate-900">{{ formatCurrency(item.amount) }}</p>
+                    <p class="text-xs text-slate-500">{{ item.has_finance_link ? "Sudah masuk kas" : "Belum masuk kas" }}</p>
+                  </td>
+                  <td class="px-4 py-3"><StatusBadge :status="item.status" /></td>
+                  <td class="px-4 py-3 text-right">
+                    <div class="flex justify-end">
+                      <ActionMenu :items="actionItems(item)" @select="handleAction(item, $event)" />
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </DataTable>
+
+            <EmptyState v-else title="Belum ada donasi" description="Catatan donasi akan muncul setelah data pertama ditambahkan." />
+          </template>
+
+          <div class="mt-4 flex items-center justify-between text-sm text-slate-500">
+            <p>Menampilkan {{ donations.data.length }} dari total {{ donations.total }} donasi.</p>
+            <div class="flex gap-2">
+              <Button size="sm" variant="outline" :disabled="!donations.prev_page_url" @click="visitTable(donations.prev_page_url)">Sebelumnya</Button>
+              <Button size="sm" variant="outline" :disabled="!donations.next_page_url" @click="visitTable(donations.next_page_url)">Berikutnya</Button>
+            </div>
+          </div>
+        </div>
+      </Card>
+    </div>
+
+    <ConfirmDialog
+      v-model:open="confirmDialog.open"
+      title="Konfirmasi Donasi"
+      description="Donasi yang dikonfirmasi akan masuk ke pencatatan keuangan masjid. Lanjutkan?"
+      confirm-text="Konfirmasi"
+      cancel-text="Batal"
+      :processing="statusForm.processing"
+      @confirm="submitConfirm"
+    />
+
+    <ConfirmDialog
+      v-model:open="rejectDialog.open"
+      title="Tolak Donasi"
+      description="Apakah Anda yakin ingin menolak donasi ini? Catatan keuangan terkait akan dibatalkan."
+      confirm-text="Tolak"
+      cancel-text="Batal"
+      :processing="statusForm.processing"
+      :danger="true"
+      @confirm="submitReject"
+    />
+    <MobileFab @click="scrollToForm" />
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
         <div>
           <p class="text-sm font-semibold text-slate-900">Catat Donasi Manual</p>
           <p class="mt-1 text-sm text-slate-500">Donasi `confirmed` otomatis masuk ke pencatatan keuangan masjid.</p>
@@ -287,98 +385,8 @@ const submitReject = () => {
             <Button :disabled="createForm.processing" @click="submitCreate">{{ createForm.processing ? "Menyimpan..." : "Simpan Donasi" }}</Button>
           </div>
         </div>
-      </Card>
-
-      <Card class="p-0">
-        <div class="border-b border-slate-200 px-5 py-4">
-          <p class="text-sm font-semibold text-slate-900">Daftar Donasi</p>
-        </div>
-
-        <div class="p-5">
-          <TableSkeleton v-if="loadingTable" :rows="6" :columns="5" />
-
-          <template v-else>
-            <DataTable v-if="donations.data.length" :data="donations.data">
-              <template #mobile-card="{ item }">
-                <div class="flex items-center justify-between border-b border-slate-100 bg-white p-4 rounded-xl shadow-sm mb-2">
-                  <div>
-                    <p class="font-medium text-slate-900">{{ item.donor_name }}</p>
-                    <p class="text-xs text-slate-500">{{ item.campaign }} • {{ item.donation_date }}</p>
-                    <p class="mt-1 font-medium text-slate-900">{{ formatCurrency(item.amount) }}</p>
-                  </div>
-                  <div class="flex flex-col items-end gap-2">
-                    <StatusBadge :status="item.status" />
-                    <ActionMenu :items="actionItems(item)" @select="handleAction(item, $event)" />
-                  </div>
-                </div>
-              </template>
-              <thead class="bg-slate-50 text-xs uppercase text-slate-500">
-                <tr>
-                  <th class="px-4 py-3 text-left">Donatur</th>
-                  <th class="px-4 py-3 text-left">Program</th>
-                  <th class="px-4 py-3 text-left">Nominal</th>
-                  <th class="px-4 py-3 text-left">Status</th>
-                  <th class="px-4 py-3 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in donations.data" :key="item.id" class="border-t border-slate-100">
-                  <td class="px-4 py-3">
-                    <p class="font-medium text-slate-900">{{ item.donor_name }}</p>
-                    <p class="text-xs text-slate-500">{{ item.phone || "-" }} • {{ item.donation_date }}</p>
-                  </td>
-                  <td class="px-4 py-3">
-                    <p>{{ item.campaign }}</p>
-                    <p class="text-xs uppercase text-slate-500">{{ item.method }}</p>
-                  </td>
-                  <td class="px-4 py-3">
-                    <p class="font-medium text-slate-900">{{ formatCurrency(item.amount) }}</p>
-                    <p class="text-xs text-slate-500">{{ item.has_finance_link ? "Sudah masuk kas" : "Belum masuk kas" }}</p>
-                  </td>
-                  <td class="px-4 py-3"><StatusBadge :status="item.status" /></td>
-                  <td class="px-4 py-3 text-right">
-                    <div class="flex justify-end">
-                      <ActionMenu :items="actionItems(item)" @select="handleAction(item, $event)" />
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </DataTable>
-
-            <EmptyState v-else title="Belum ada donasi" description="Catatan donasi akan muncul setelah data pertama ditambahkan." />
-          </template>
-
-          <div class="mt-4 flex items-center justify-between text-sm text-slate-500">
-            <p>Menampilkan {{ donations.data.length }} dari total {{ donations.total }} donasi.</p>
-            <div class="flex gap-2">
-              <Button size="sm" variant="outline" :disabled="!donations.prev_page_url" @click="visitTable(donations.prev_page_url)">Sebelumnya</Button>
-              <Button size="sm" variant="outline" :disabled="!donations.next_page_url" @click="visitTable(donations.next_page_url)">Berikutnya</Button>
-            </div>
-          </div>
-        </div>
-      </Card>
-    </div>
-
-    <ConfirmDialog
-      v-model:open="confirmDialog.open"
-      title="Konfirmasi Donasi"
-      description="Donasi yang dikonfirmasi akan masuk ke pencatatan keuangan masjid. Lanjutkan?"
-      confirm-text="Konfirmasi"
-      cancel-text="Batal"
-      :processing="statusForm.processing"
-      @confirm="submitConfirm"
-    />
-
-    <ConfirmDialog
-      v-model:open="rejectDialog.open"
-      title="Tolak Donasi"
-      description="Apakah Anda yakin ingin menolak donasi ini? Catatan keuangan terkait akan dibatalkan."
-      confirm-text="Tolak"
-      cancel-text="Batal"
-      :processing="statusForm.processing"
-      :danger="true"
-      @confirm="submitReject"
-    />
-    <MobileFab @click="scrollToForm" />
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>

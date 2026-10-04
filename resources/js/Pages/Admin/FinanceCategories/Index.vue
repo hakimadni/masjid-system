@@ -1,4 +1,6 @@
 <script setup>
+import Dialog from "@/Components/ui/dialog/Dialog.vue"
+import MobileFab from "@/Components/MobileFab.vue"
 import { computed, ref } from "vue"
 import { Head, router, useForm, usePage } from "@inertiajs/vue3"
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue"
@@ -112,7 +114,39 @@ const errorFor = (key) => errors.value[key] ?? ""
         </div>
       </Card>
 
-      <Card class="p-5">
+      
+
+      <Card class="p-0">
+        <div class="border-b border-slate-200 px-5 py-4"><p class="text-sm font-semibold text-slate-900">Daftar Kategori</p></div>
+        <div class="p-5">
+          <DataTable v-if="categories.data.length">
+            <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+              <tr>
+                <th class="px-4 py-3 text-left">Kategori</th>
+                <th class="px-4 py-3 text-left">Jenis</th>
+                <th class="px-4 py-3 text-left">Status</th>
+                <th class="px-4 py-3 text-left">Transaksi</th>
+                <th class="px-4 py-3 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in categories.data" :key="item.id" class="border-t border-slate-100">
+                <td class="px-4 py-3"><p class="font-medium text-slate-900">{{ item.name }}</p><p v-if="item.description" class="text-xs text-slate-500">{{ item.description }}</p></td>
+                <td class="px-4 py-3 text-sm text-slate-600">{{ item.entry_type === 'income' ? 'Pemasukan' : 'Pengeluaran' }}</td>
+                <td class="px-4 py-3"><StatusBadge :status="item.is_active ? 'published' : 'draft'" /></td>
+                <td class="px-4 py-3 text-sm text-slate-600">{{ item.transactions_count }}</td>
+                <td class="px-4 py-3 text-right"><div class="flex justify-end"><ActionMenu :items="actionItems" @select="handleAction(item, $event)" /></div></td>
+              </tr>
+            </tbody>
+          </DataTable>
+          <EmptyState v-else title="Belum ada kategori" description="Tambahkan kategori pemasukan dan pengeluaran agar laporan lebih rapi." />
+        </div>
+      </Card>
+    </div>
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
         <div>
           <p class="text-sm font-semibold text-slate-900">{{ editingId ? 'Edit Kategori' : 'Tambah Kategori' }}</p>
           <p class="mt-1 text-sm text-slate-500">Gunakan kategori aktif agar muncul di form transaksi.</p>
@@ -144,34 +178,8 @@ const errorFor = (key) => errors.value[key] ?? ""
           <Button v-if="editingId" variant="outline" @click="resetEditor">Batal Edit</Button>
           <Button :disabled="categoryForm.processing" @click="submitForm">{{ categoryForm.processing ? 'Menyimpan...' : (editingId ? 'Simpan Perubahan' : 'Tambah Kategori') }}</Button>
         </div>
-      </Card>
-
-      <Card class="p-0">
-        <div class="border-b border-slate-200 px-5 py-4"><p class="text-sm font-semibold text-slate-900">Daftar Kategori</p></div>
-        <div class="p-5">
-          <DataTable v-if="categories.data.length">
-            <thead class="bg-slate-50 text-xs uppercase text-slate-500">
-              <tr>
-                <th class="px-4 py-3 text-left">Kategori</th>
-                <th class="px-4 py-3 text-left">Jenis</th>
-                <th class="px-4 py-3 text-left">Status</th>
-                <th class="px-4 py-3 text-left">Transaksi</th>
-                <th class="px-4 py-3 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in categories.data" :key="item.id" class="border-t border-slate-100">
-                <td class="px-4 py-3"><p class="font-medium text-slate-900">{{ item.name }}</p><p v-if="item.description" class="text-xs text-slate-500">{{ item.description }}</p></td>
-                <td class="px-4 py-3 text-sm text-slate-600">{{ item.entry_type === 'income' ? 'Pemasukan' : 'Pengeluaran' }}</td>
-                <td class="px-4 py-3"><StatusBadge :status="item.is_active ? 'published' : 'draft'" /></td>
-                <td class="px-4 py-3 text-sm text-slate-600">{{ item.transactions_count }}</td>
-                <td class="px-4 py-3 text-right"><div class="flex justify-end"><ActionMenu :items="actionItems" @select="handleAction(item, $event)" /></div></td>
-              </tr>
-            </tbody>
-          </DataTable>
-          <EmptyState v-else title="Belum ada kategori" description="Tambahkan kategori pemasukan dan pengeluaran agar laporan lebih rapi." />
-        </div>
-      </Card>
-    </div>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>

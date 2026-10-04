@@ -4,6 +4,8 @@ import { Head, useForm, usePage } from "@inertiajs/vue3"
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue"
 import DataTable from "@/Components/ui/table/DataTable.vue"
 import ToastMessage from "@/Components/ui/toast/ToastMessage.vue"
+import Dialog from "@/Components/ui/dialog/Dialog.vue"
+import MobileFab from "@/Components/MobileFab.vue"
 import Card from "@/Components/ui/card/Card.vue"
 import Button from "@/Components/ui/button/Button.vue"
 import Input from "@/Components/ui/input/Input.vue"
@@ -19,6 +21,7 @@ const props = defineProps({
 
 const flash = usePage().props.flash
 
+const createDialogOpen = ref(false)
 const createForm = useForm({
   user_id: "",
   target_amount: "",
@@ -137,28 +140,7 @@ const updateStatus = (savingId, status) => {
         <StatCard title="Rata-rata Progress" :value="`${Number(summary.avg_progress || 0).toFixed(1)}%`" />
       </div>
 
-      <Card class="p-5">
-        <p class="text-sm font-medium text-slate-700">Buat Tabungan Baru dengan Target Custom</p>
-
-        <div class="mt-3 flex flex-wrap gap-2">
-          <Button v-for="item in quickTargets" :key="item.label" variant="outline" size="sm" @click="chooseQuickTarget(item.value)">
-            {{ item.label }}
-          </Button>
-        </div>
-
-        <div class="mt-4 grid gap-3 md:grid-cols-4">
-          <Select v-model="createForm.user_id">
-            <option disabled value="">Pilih User</option>
-            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
-          </Select>
-          <Input v-model="createForm.target_amount" placeholder="Target Amount (IDR)" />
-          <Select v-model="createForm.status">
-            <option value="active">active</option>
-            <option value="cancelled">cancelled</option>
-          </Select>
-          <Button @click="submitCreate">Simpan</Button>
-        </div>
-      </Card>
+      
 
       <DataTable>
         <thead class="bg-slate-50 text-xs uppercase text-slate-500">
@@ -234,5 +216,32 @@ const updateStatus = (savingId, status) => {
         </div>
       </Card>
     </div>
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
+        <p class="text-sm font-medium text-slate-700">Buat Tabungan Baru dengan Target Custom</p>
+
+        <div class="mt-3 flex flex-wrap gap-2">
+          <Button v-for="item in quickTargets" :key="item.label" variant="outline" size="sm" @click="chooseQuickTarget(item.value)">
+            {{ item.label }}
+          </Button>
+        </div>
+
+        <div class="mt-4 grid gap-3 md:grid-cols-4">
+          <Select v-model="createForm.user_id">
+            <option disabled value="">Pilih User</option>
+            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+          </Select>
+          <Input v-model="createForm.target_amount" placeholder="Target Amount (IDR)" />
+          <Select v-model="createForm.status">
+            <option value="active">active</option>
+            <option value="cancelled">cancelled</option>
+          </Select>
+          <Button @click="submitCreate">Simpan</Button>
+        </div>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>

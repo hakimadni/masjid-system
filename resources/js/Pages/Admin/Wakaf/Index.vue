@@ -99,7 +99,31 @@ const submitUsage = () => {
       </div>
 
       <!-- Wakaf Records -->
-      <Card>
+      
+
+      <!-- Wakaf Dialog -->
+      <Dialog v-model:open="showRecordDialog">
+        <form @submit.prevent="submitRecord" class="p-6">
+          <h3 class="text-lg font-semibold mb-4">Tambah Wakaf</h3>
+          <div class="space-y-3">
+            <select v-model="recordForm.wakaf_type" class="w-full border rounded px-3 py-2">
+              <option value="uang">Uang</option>
+              <option value="aset">Aset</option>
+              <option value="fidiyah">Fidiyah</option>
+            </select>
+            <Input v-model="recordForm.amount" type="number" step="1000" placeholder="Jumlah (Rp)" />
+            <Input v-model="recordForm.asset_description" placeholder="Deskripsi aset (jika aset)" />
+            <Input v-model="recordForm.purpose" placeholder="Tujuan wakaf" />
+            <Input v-model="recordForm.pledged_date" type="date" />
+            <Button type="submit" :disabled="recordForm.processing">Simpan</Button>
+          </div>
+        </form>
+      </Dialog>
+    </div>
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
         <CardHeader class="flex flex-row items-center justify-between">
           <CardTitle>Daftar Wakaf</CardTitle>
           <Button @click="showRecordDialog = true" size="sm">Tambah Wakaf</Button>
@@ -131,26 +155,8 @@ const submitUsage = () => {
             </table>
           </div>
         </CardContent>
-      </Card>
-
-      <!-- Wakaf Dialog -->
-      <Dialog v-model:open="showRecordDialog">
-        <form @submit.prevent="submitRecord" class="p-6">
-          <h3 class="text-lg font-semibold mb-4">Tambah Wakaf</h3>
-          <div class="space-y-3">
-            <select v-model="recordForm.wakaf_type" class="w-full border rounded px-3 py-2">
-              <option value="uang">Uang</option>
-              <option value="aset">Aset</option>
-              <option value="fidiyah">Fidiyah</option>
-            </select>
-            <Input v-model="recordForm.amount" type="number" step="1000" placeholder="Jumlah (Rp)" />
-            <Input v-model="recordForm.asset_description" placeholder="Deskripsi aset (jika aset)" />
-            <Input v-model="recordForm.purpose" placeholder="Tujuan wakaf" />
-            <Input v-model="recordForm.pledged_date" type="date" />
-            <Button type="submit" :disabled="recordForm.processing">Simpan</Button>
-          </div>
-        </form>
-      </Dialog>
-    </div>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>

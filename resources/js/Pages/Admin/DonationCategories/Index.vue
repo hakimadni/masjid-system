@@ -1,4 +1,6 @@
 <script setup>
+import Dialog from "@/Components/ui/dialog/Dialog.vue"
+import MobileFab from "@/Components/MobileFab.vue"
 import { computed, ref } from "vue"
 import { Head, useForm, usePage } from "@inertiajs/vue3"
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue"
@@ -19,6 +21,7 @@ const flash = computed(() => page.props.flash ?? {})
 const confirmDelete = ref(false)
 const selectedCategory = ref(null)
 
+const createDialogOpen = ref(false)
 const form = useForm({
   name: "",
   description: "",
@@ -62,26 +65,7 @@ const submitDelete = () => {
         {{ flash.success }}
       </div>
 
-      <Card class="p-5">
-        <p class="text-sm font-semibold text-slate-900">Tambah Kategori Baru</p>
-        <form class="mt-4 grid gap-3 md:grid-cols-2" @submit.prevent="submitCreate">
-          <div class="md:col-span-2">
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama Kategori</label>
-            <Input v-model="form.name" placeholder="Infaq Harian / Zakat Fitrah" />
-            <p v-if="$page.props.errors.name" class="mt-1 text-xs text-rose-600">{{ $page.props.errors.name }}</p>
-          </div>
-          <div class="md:col-span-2">
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Deskripsi Singkat</label>
-            <Input v-model="form.description" placeholder="Opsional: konteks penggunaan kategori." />
-            <p v-if="$page.props.errors.description" class="mt-1 text-xs text-rose-600">{{ $page.props.errors.description }}</p>
-          </div>
-          <div class="md:col-span-2 flex justify-end">
-            <Button :disabled="form.processing">
-              {{ form.processing ? "Menyimpan..." : "Simpan Kategori" }}
-            </Button>
-          </div>
-        </form>
-      </Card>
+      
 
       <Card class="divide-y divide-slate-100">
         <div class="border-b border-slate-200 px-5 py-4">
@@ -113,5 +97,30 @@ const submitDelete = () => {
       :processing="form.processing"
       @confirm="submitDelete"
     />
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
+        <p class="text-sm font-semibold text-slate-900">Tambah Kategori Baru</p>
+        <form class="mt-4 grid gap-3 md:grid-cols-2" @submit.prevent="submitCreate">
+          <div class="md:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama Kategori</label>
+            <Input v-model="form.name" placeholder="Infaq Harian / Zakat Fitrah" />
+            <p v-if="$page.props.errors.name" class="mt-1 text-xs text-rose-600">{{ $page.props.errors.name }}</p>
+          </div>
+          <div class="md:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Deskripsi Singkat</label>
+            <Input v-model="form.description" placeholder="Opsional: konteks penggunaan kategori." />
+            <p v-if="$page.props.errors.description" class="mt-1 text-xs text-rose-600">{{ $page.props.errors.description }}</p>
+          </div>
+          <div class="md:col-span-2 flex justify-end">
+            <Button :disabled="form.processing">
+              {{ form.processing ? "Menyimpan..." : "Simpan Kategori" }}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>

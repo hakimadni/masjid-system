@@ -1,4 +1,6 @@
 <script setup>
+import Dialog from "@/Components/ui/dialog/Dialog.vue"
+import MobileFab from "@/Components/MobileFab.vue"
 import { computed, ref } from "vue"
 import { Head, router, useForm, usePage } from "@inertiajs/vue3"
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue"
@@ -26,6 +28,7 @@ const props = defineProps({
 const page = usePage()
 const flash = computed(() => page.props.flash ?? {})
 
+const createDialogOpen = ref(false)
 const createForm = useForm({
   title: "",
   category: "surat-masuk",
@@ -97,48 +100,7 @@ const handleAction = (doc, key) => {
 
       <PageHeader title="Dokumen" description="Kelola surat, proposal, LPJ, SK, dan arsip masjid." />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Tambah Dokumen Baru</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div class="grid gap-4 md:grid-cols-2">
-            <div>
-              <label class="text-sm font-medium">Judul</label>
-              <Input v-model="createForm.title" placeholder="Judul dokumen" />
-            </div>
-            <div>
-              <label class="text-sm font-medium">Kategori</label>
-              <Select v-model="createForm.category">
-                <option value="surat-masuk">Surat Masuk</option>
-                <option value="surat-keluar">Surat Keluar</option>
-                <option value="proposal">Proposal</option>
-                <option value="lpj">LPJ Kegiatan</option>
-                <option value="sk-pengurus">SK Pengurus</option>
-              </Select>
-            </div>
-            <div>
-              <label class="text-sm font-medium">Nomor Dokumen</label>
-              <Input v-model="createForm.document_number" placeholder="Nomor dokumen" />
-            </div>
-            <div>
-              <label class="text-sm font-medium">Tanggal</label>
-              <Input type="date" v-model="createForm.document_date" />
-            </div>
-            <div class="md:col-span-2">
-              <label class="text-sm font-medium">Deskripsi</label>
-              <Textarea v-model="createForm.description" placeholder="Deskripsi dokumen" />
-            </div>
-            <div class="md:col-span-2">
-              <label class="text-sm font-medium">File</label>
-              <Input type="file" @change="e => createForm.file = e.target.files[0]" />
-            </div>
-          </div>
-          <div class="mt-4">
-            <Button @click="submitCreate">Simpan</Button>
-          </div>
-        </CardContent>
-      </Card>
+      
 
       <DataTable>
         <thead class="bg-slate-50 text-xs uppercase text-slate-500">
@@ -182,5 +144,52 @@ const handleAction = (doc, key) => {
         @confirm="destroyDocument"
       />
     </div>
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
+        <CardHeader>
+          <CardTitle>Tambah Dokumen Baru</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <label class="text-sm font-medium">Judul</label>
+              <Input v-model="createForm.title" placeholder="Judul dokumen" />
+            </div>
+            <div>
+              <label class="text-sm font-medium">Kategori</label>
+              <Select v-model="createForm.category">
+                <option value="surat-masuk">Surat Masuk</option>
+                <option value="surat-keluar">Surat Keluar</option>
+                <option value="proposal">Proposal</option>
+                <option value="lpj">LPJ Kegiatan</option>
+                <option value="sk-pengurus">SK Pengurus</option>
+              </Select>
+            </div>
+            <div>
+              <label class="text-sm font-medium">Nomor Dokumen</label>
+              <Input v-model="createForm.document_number" placeholder="Nomor dokumen" />
+            </div>
+            <div>
+              <label class="text-sm font-medium">Tanggal</label>
+              <Input type="date" v-model="createForm.document_date" />
+            </div>
+            <div class="md:col-span-2">
+              <label class="text-sm font-medium">Deskripsi</label>
+              <Textarea v-model="createForm.description" placeholder="Deskripsi dokumen" />
+            </div>
+            <div class="md:col-span-2">
+              <label class="text-sm font-medium">File</label>
+              <Input type="file" @change="e => createForm.file = e.target.files[0]" />
+            </div>
+          </div>
+          <div class="mt-4">
+            <Button @click="submitCreate">Simpan</Button>
+          </div>
+        </CardContent>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>

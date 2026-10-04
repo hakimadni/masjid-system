@@ -1,4 +1,7 @@
 <script setup>
+import { ref } from "vue"
+import Dialog from "@/Components/ui/dialog/Dialog.vue"
+import MobileFab from "@/Components/MobileFab.vue"
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue"
 import DataTable from "@/Components/ui/table/DataTable.vue"
 import QrCard from "@/Components/qurban/QrCard.vue"
@@ -10,6 +13,7 @@ import { Head, Link, useForm } from "@inertiajs/vue3"
 
 defineProps({ volunteers: Object })
 
+const createDialogOpen = ref(false)
 const form = useForm({ name: "", phone: "", role_type: "administrasi" })
 const submit = () => form.post(route("volunteers.store"))
 </script>
@@ -19,24 +23,7 @@ const submit = () => form.post(route("volunteers.store"))
   <AuthenticatedLayout title="Relawan Qurban">
 
     <div class="space-y-6">
-      <Card class="p-5">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <p class="text-sm font-medium text-slate-700">Tambah Relawan</p>
-          <a :href="route('volunteers.id-card-batch-pdf')"><Button variant="outline">Batch Print ID Card</Button></a>
-        </div>
-
-        <div class="mt-4 grid gap-3 md:grid-cols-4">
-          <Input v-model="form.name" placeholder="Nama" />
-          <Input v-model="form.phone" placeholder="Telepon" />
-          <Select v-model="form.role_type">
-            <option value="administrasi">administrasi</option>
-            <option value="penyembelih">penyembelih</option>
-            <option value="distribusi">distribusi</option>
-            <option value="dokumentasi">dokumentasi</option>
-          </Select>
-          <Button @click="submit">Simpan</Button>
-        </div>
-      </Card>
+      
 
       <DataTable>
         <thead class="bg-slate-50 text-xs uppercase text-slate-500">
@@ -65,5 +52,28 @@ const submit = () => form.post(route("volunteers.store"))
         </tbody>
       </DataTable>
     </div>
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <p class="text-sm font-medium text-slate-700">Tambah Relawan</p>
+          <a :href="route('volunteers.id-card-batch-pdf')"><Button variant="outline">Batch Print ID Card</Button></a>
+        </div>
+
+        <div class="mt-4 grid gap-3 md:grid-cols-4">
+          <Input v-model="form.name" placeholder="Nama" />
+          <Input v-model="form.phone" placeholder="Telepon" />
+          <Select v-model="form.role_type">
+            <option value="administrasi">administrasi</option>
+            <option value="penyembelih">penyembelih</option>
+            <option value="distribusi">distribusi</option>
+            <option value="dokumentasi">dokumentasi</option>
+          </Select>
+          <Button @click="submit">Simpan</Button>
+        </div>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>

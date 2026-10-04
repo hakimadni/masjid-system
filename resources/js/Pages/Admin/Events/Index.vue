@@ -1,4 +1,6 @@
 <script setup>
+import Dialog from "@/Components/ui/dialog/Dialog.vue"
+import MobileFab from "@/Components/MobileFab.vue"
 import { computed, ref } from "vue"
 import { Head, router, useForm, usePage, Link } from "@inertiajs/vue3"
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue"
@@ -37,6 +39,7 @@ const filterForm = useForm({
   end_date: props.filters.end_date ?? "",
 })
 
+const createDialogOpen = ref(false)
 const createForm = useForm({
   title: "",
   start_at: "",
@@ -151,60 +154,7 @@ const handleAction = (item, key) => {
         </div>
       </Card>
 
-      <Card class="p-5">
-        <div>
-          <p class="text-sm font-semibold text-slate-900">Buat Agenda Baru</p>
-          <p class="mt-1 text-sm text-slate-500">Catat kajian, program sosial, dan agenda operasional dengan PIC yang jelas.</p>
-        </div>
-
-        <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <div class="xl:col-span-2">
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Judul kegiatan</label>
-            <Input v-model="createForm.title" placeholder="Kajian Ahad Pagi" />
-            <p v-if="errorFor('title')" class="mt-1 text-xs text-rose-600">{{ errorFor("title") }}</p>
-          </div>
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Mulai</label>
-            <Input v-model="createForm.start_at" type="datetime-local" />
-            <p v-if="errorFor('start_at')" class="mt-1 text-xs text-rose-600">{{ errorFor("start_at") }}</p>
-          </div>
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Selesai</label>
-            <Input v-model="createForm.end_at" type="datetime-local" />
-            <p v-if="errorFor('end_at')" class="mt-1 text-xs text-rose-600">{{ errorFor("end_at") }}</p>
-          </div>
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Lokasi</label>
-            <Input v-model="createForm.location" placeholder="Aula Utama" />
-            <p v-if="errorFor('location')" class="mt-1 text-xs text-rose-600">{{ errorFor("location") }}</p>
-          </div>
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">PIC</label>
-            <Input v-model="createForm.pic_name" placeholder="Sekretaris DKM" />
-            <p v-if="errorFor('pic_name')" class="mt-1 text-xs text-rose-600">{{ errorFor("pic_name") }}</p>
-          </div>
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Status</label>
-            <Select v-model="createForm.status">
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="completed">Completed</option>
-            </Select>
-            <p v-if="errorFor('status')" class="mt-1 text-xs text-rose-600">{{ errorFor("status") }}</p>
-          </div>
-        </div>
-
-        <div class="mt-3 grid gap-3 md:grid-cols-[1fr_auto]">
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Catatan</label>
-            <Textarea v-model="createForm.notes" :rows="3" placeholder="Agenda, kebutuhan teknis, atau konteks koordinasi." />
-            <p v-if="errorFor('notes')" class="mt-1 text-xs text-rose-600">{{ errorFor("notes") }}</p>
-          </div>
-          <div class="flex items-end">
-            <Button :disabled="createForm.processing" @click="submitCreate">{{ createForm.processing ? "Menyimpan..." : "Simpan Kegiatan" }}</Button>
-          </div>
-        </div>
-      </Card>
+      
 
       <Card class="p-0">
         <div class="border-b border-slate-200 px-5 py-4">
@@ -271,5 +221,64 @@ const handleAction = (item, key) => {
         @confirm="destroyEvent"
       />
     </div>
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
+        <div>
+          <p class="text-sm font-semibold text-slate-900">Buat Agenda Baru</p>
+          <p class="mt-1 text-sm text-slate-500">Catat kajian, program sosial, dan agenda operasional dengan PIC yang jelas.</p>
+        </div>
+
+        <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <div class="xl:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Judul kegiatan</label>
+            <Input v-model="createForm.title" placeholder="Kajian Ahad Pagi" />
+            <p v-if="errorFor('title')" class="mt-1 text-xs text-rose-600">{{ errorFor("title") }}</p>
+          </div>
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Mulai</label>
+            <Input v-model="createForm.start_at" type="datetime-local" />
+            <p v-if="errorFor('start_at')" class="mt-1 text-xs text-rose-600">{{ errorFor("start_at") }}</p>
+          </div>
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Selesai</label>
+            <Input v-model="createForm.end_at" type="datetime-local" />
+            <p v-if="errorFor('end_at')" class="mt-1 text-xs text-rose-600">{{ errorFor("end_at") }}</p>
+          </div>
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Lokasi</label>
+            <Input v-model="createForm.location" placeholder="Aula Utama" />
+            <p v-if="errorFor('location')" class="mt-1 text-xs text-rose-600">{{ errorFor("location") }}</p>
+          </div>
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">PIC</label>
+            <Input v-model="createForm.pic_name" placeholder="Sekretaris DKM" />
+            <p v-if="errorFor('pic_name')" class="mt-1 text-xs text-rose-600">{{ errorFor("pic_name") }}</p>
+          </div>
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Status</label>
+            <Select v-model="createForm.status">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="completed">Completed</option>
+            </Select>
+            <p v-if="errorFor('status')" class="mt-1 text-xs text-rose-600">{{ errorFor("status") }}</p>
+          </div>
+        </div>
+
+        <div class="mt-3 grid gap-3 md:grid-cols-[1fr_auto]">
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Catatan</label>
+            <Textarea v-model="createForm.notes" :rows="3" placeholder="Agenda, kebutuhan teknis, atau konteks koordinasi." />
+            <p v-if="errorFor('notes')" class="mt-1 text-xs text-rose-600">{{ errorFor("notes") }}</p>
+          </div>
+          <div class="flex items-end">
+            <Button :disabled="createForm.processing" @click="submitCreate">{{ createForm.processing ? "Menyimpan..." : "Simpan Kegiatan" }}</Button>
+          </div>
+        </div>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>

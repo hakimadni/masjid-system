@@ -1,4 +1,7 @@
 <script setup>
+import { ref } from "vue"
+import Dialog from "@/Components/ui/dialog/Dialog.vue"
+import MobileFab from "@/Components/MobileFab.vue"
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue"
 import PaymentBadge from "@/Components/qurban/PaymentBadge.vue"
 import DataTable from "@/Components/ui/table/DataTable.vue"
@@ -11,6 +14,7 @@ import { Head, Link, useForm } from "@inertiajs/vue3"
 
 const props = defineProps({ participants: Object, animals: Array, savings: Array })
 
+const createDialogOpen = ref(false)
 const form = useForm({
   animal_id: "",
   qurban_saving_id: "",
@@ -37,27 +41,7 @@ const formatCurrency = (v) => new Intl.NumberFormat("id-ID", { style: "currency"
   <AuthenticatedLayout title="Peserta Qurban">
 
     <div class="space-y-6">
-      <Card class="p-5">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <p class="text-sm font-medium text-slate-700">Tambah Peserta</p>
-          <Button variant="outline" @click="runAutoGroup">Auto Group Sapi (7 peserta)</Button>
-        </div>
-
-        <div class="mt-4 grid gap-3 md:grid-cols-6">
-          <Select v-model="form.animal_id">
-            <option disabled value="">Pilih Hewan</option>
-            <option v-for="a in animals" :key="a.id" :value="a.id">{{ animalLabel(a) }}</option>
-          </Select>
-          <Select v-model="form.qurban_saving_id">
-            <option value="">— Tanpa Tabungan —</option>
-            <option v-for="s in savings" :key="s.id" :value="s.id">{{ savingLabel(s) }}</option>
-          </Select>
-          <Input v-model="form.name" placeholder="Nama" />
-          <Input v-model="form.phone" placeholder="Nomor Telepon" />
-          <Input v-model="form.amount_due" placeholder="Tagihan" />
-          <Button @click="submit">Simpan</Button>
-        </div>
-      </Card>
+      
 
       <DataTable>
         <thead class="bg-slate-50 text-xs uppercase text-slate-500">
@@ -108,5 +92,31 @@ const formatCurrency = (v) => new Intl.NumberFormat("id-ID", { style: "currency"
         </tbody>
       </DataTable>
     </div>
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <p class="text-sm font-medium text-slate-700">Tambah Peserta</p>
+          <Button variant="outline" @click="runAutoGroup">Auto Group Sapi (7 peserta)</Button>
+        </div>
+
+        <div class="mt-4 grid gap-3 md:grid-cols-6">
+          <Select v-model="form.animal_id">
+            <option disabled value="">Pilih Hewan</option>
+            <option v-for="a in animals" :key="a.id" :value="a.id">{{ animalLabel(a) }}</option>
+          </Select>
+          <Select v-model="form.qurban_saving_id">
+            <option value="">— Tanpa Tabungan —</option>
+            <option v-for="s in savings" :key="s.id" :value="s.id">{{ savingLabel(s) }}</option>
+          </Select>
+          <Input v-model="form.name" placeholder="Nama" />
+          <Input v-model="form.phone" placeholder="Nomor Telepon" />
+          <Input v-model="form.amount_due" placeholder="Tagihan" />
+          <Button @click="submit">Simpan</Button>
+        </div>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>
