@@ -76,6 +76,12 @@ Route::middleware('auth')->group(function () {
 });
 
 // Public routes
+Route::get('/tentang-kami', function () {
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+    ]);
+})->name('public.landing');
+
 Route::get('/jadwal-shalat', [PrayerTimesController::class, 'index'])
     ->name('public.prayer-times');
 
