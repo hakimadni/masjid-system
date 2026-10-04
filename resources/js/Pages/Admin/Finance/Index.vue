@@ -15,6 +15,7 @@ import StatusBadge from "@/Components/ui/status/StatusBadge.vue"
 import MoneyDisplay from "@/Components/ui/display/MoneyDisplay.vue"
 import ActionMenu from "@/Components/ui/dropdown/ActionMenu.vue"
 import PageHeader from "@/Components/ui/page/PageHeader.vue"
+import Dialog from "@/Components/ui/dialog/Dialog.vue"
 import ConfirmDialog from "@/Components/ui/dialog/ConfirmDialog.vue"
 import MobileFab from "@/Components/MobileFab.vue"
 
@@ -57,6 +58,7 @@ const rejectionForm = useForm({
   rejected_reason: '',
 })
 
+const createDialogOpen = ref(false)
 const rejectionDialog = ref({
   open: false,
   itemId: null,
@@ -94,7 +96,7 @@ const resetFilters = () => {
   applyFilters()
 }
 
-const submitCreate = () => createForm.post(route("finance.store"), { preserveScroll: true })
+const submitCreate = () => createForm.post(route("finance.store"), { preserveScroll: true, onSuccess: () => { createDialogOpen.value = false; createForm.reset() } })
 
 const updateStatus = (id, status) =>
   useForm({ status }).patch(route("finance.update-status", id), { preserveScroll: true })
@@ -116,7 +118,7 @@ const openRejectDialog = (id) => {
 }
 
 const scrollToForm = () => {
-  document.getElementById('create-form')?.scrollIntoView({ behavior: 'smooth' })
+  createDialogOpen.value = true
 }
 
 const submitReject = () => {
@@ -196,91 +198,7 @@ const submitReject = () => {
         </div>
       </Card>
 
-      <Card id="create-form" class="p-5">
-        <div>
-          <p class="text-sm font-semibold text-slate-900">Catat Transaksi Baru</p>
-          <p class="mt-1 text-sm text-slate-500">Gunakan status `pending` untuk proses verifikasi dan `approved` untuk pencatatan final.</p>
-        </div>
-
-        <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <div class="xl:col-span-2">
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Judul transaksi</label>
-            <Input v-model="createForm.title" placeholder="Contoh: Pembelian alat kebersihan" />
-            <p v-if="errorFor('title')" class="mt-1 text-xs text-rose-600">{{ errorFor("title") }}</p>
-          </div>
-
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Jenis</label>
-            <Select v-model="createForm.entry_type">
-              <option value="income">Uang Masuk</option>
-              <option value="expense">Uang Keluar</option>
-            </Select>
-            <p v-if="errorFor('entry_type')" class="mt-1 text-xs text-rose-600">{{ errorFor("entry_type") }}</p>
-          </div>
-
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Akun kas</label>
-            <Select v-model="createForm.finance_account_id">
-              <option value="">Pilih akun kas</option>
-              <option v-for="item in accounts" :key="item.id" :value="item.id">{{ item.name }}</option>
-            </Select>
-            <p v-if="errorFor('finance_account_id')" class="mt-1 text-xs text-rose-600">{{ errorFor("finance_account_id") }}</p>
-          </div>
-
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Kategori</label>
-            <Select v-model="createForm.finance_category_id">
-              <option value="">Pilih kategori</option>
-              <option v-for="item in filteredCategories" :key="item.id" :value="item.id">{{ item.name }}</option>
-            </Select>
-            <p v-if="errorFor('finance_category_id')" class="mt-1 text-xs text-rose-600">{{ errorFor("finance_category_id") }}</p>
-          </div>
-
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Nominal</label>
-            <Input v-model="createForm.amount" inputmode="numeric" placeholder="0" />
-            <p v-if="errorFor('amount')" class="mt-1 text-xs text-rose-600">{{ errorFor("amount") }}</p>
-          </div>
-
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Metode</label>
-            <Select v-model="createForm.payment_method">
-              <option value="cash">Tunai</option>
-              <option value="transfer">Transfer</option>
-              <option value="qris">QRIS</option>
-              <option value="other">Lainnya</option>
-            </Select>
-            <p v-if="errorFor('payment_method')" class="mt-1 text-xs text-rose-600">{{ errorFor("payment_method") }}</p>
-          </div>
-
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Status</label>
-            <Select v-model="createForm.status">
-              <option value="draft">Draft</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-            </Select>
-            <p v-if="errorFor('status')" class="mt-1 text-xs text-rose-600">{{ errorFor("status") }}</p>
-          </div>
-
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Tanggal transaksi</label>
-            <Input v-model="createForm.transaction_date" type="date" />
-            <p v-if="errorFor('transaction_date')" class="mt-1 text-xs text-rose-600">{{ errorFor("transaction_date") }}</p>
-          </div>
-        </div>
-
-        <div class="mt-3 grid gap-3 md:grid-cols-[1fr_auto]">
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-slate-900">Catatan</label>
-            <Textarea v-model="createForm.notes" :rows="3" placeholder="Tambahkan vendor, kebutuhan approval, atau detail transaksi." />
-            <p v-if="errorFor('notes')" class="mt-1 text-xs text-rose-600">{{ errorFor("notes") }}</p>
-          </div>
-          <div class="flex items-end">
-            <Button :disabled="createForm.processing" @click="submitCreate">{{ createForm.processing ? "Menyimpan..." : "Simpan Transaksi" }}</Button>
-          </div>
-        </div>
-      </Card>
+      
 
       <Card class="p-0">
         <div class="border-b border-slate-200 px-5 py-4">
@@ -379,5 +297,95 @@ const submitReject = () => {
       <Textarea v-model="rejectionForm.rejected_reason" :rows="3" placeholder="Masukkan alasan penolakan..." />
     </ConfirmDialog>
     <MobileFab @click="scrollToForm" />
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 overflow-y-auto max-h-[85vh]">
+        <div>
+          <p class="text-sm font-semibold text-slate-900">Catat Transaksi Baru</p>
+          <p class="mt-1 text-sm text-slate-500">Gunakan status `pending` untuk proses verifikasi dan `approved` untuk pencatatan final.</p>
+        </div>
+
+        <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <div class="xl:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Judul transaksi</label>
+            <Input v-model="createForm.title" placeholder="Contoh: Pembelian alat kebersihan" />
+            <p v-if="errorFor('title')" class="mt-1 text-xs text-rose-600">{{ errorFor("title") }}</p>
+          </div>
+
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Jenis</label>
+            <Select v-model="createForm.entry_type">
+              <option value="income">Uang Masuk</option>
+              <option value="expense">Uang Keluar</option>
+            </Select>
+            <p v-if="errorFor('entry_type')" class="mt-1 text-xs text-rose-600">{{ errorFor("entry_type") }}</p>
+          </div>
+
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Akun kas</label>
+            <Select v-model="createForm.finance_account_id">
+              <option value="">Pilih akun kas</option>
+              <option v-for="item in accounts" :key="item.id" :value="item.id">{{ item.name }}</option>
+            </Select>
+            <p v-if="errorFor('finance_account_id')" class="mt-1 text-xs text-rose-600">{{ errorFor("finance_account_id") }}</p>
+          </div>
+
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Kategori</label>
+            <Select v-model="createForm.finance_category_id">
+              <option value="">Pilih kategori</option>
+              <option v-for="item in filteredCategories" :key="item.id" :value="item.id">{{ item.name }}</option>
+            </Select>
+            <p v-if="errorFor('finance_category_id')" class="mt-1 text-xs text-rose-600">{{ errorFor("finance_category_id") }}</p>
+          </div>
+
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Nominal</label>
+            <Input v-model="createForm.amount" inputmode="numeric" placeholder="0" />
+            <p v-if="errorFor('amount')" class="mt-1 text-xs text-rose-600">{{ errorFor("amount") }}</p>
+          </div>
+
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Metode</label>
+            <Select v-model="createForm.payment_method">
+              <option value="cash">Tunai</option>
+              <option value="transfer">Transfer</option>
+              <option value="qris">QRIS</option>
+              <option value="other">Lainnya</option>
+            </Select>
+            <p v-if="errorFor('payment_method')" class="mt-1 text-xs text-rose-600">{{ errorFor("payment_method") }}</p>
+          </div>
+
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Status</label>
+            <Select v-model="createForm.status">
+              <option value="draft">Draft</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+            </Select>
+            <p v-if="errorFor('status')" class="mt-1 text-xs text-rose-600">{{ errorFor("status") }}</p>
+          </div>
+
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Tanggal transaksi</label>
+            <Input v-model="createForm.transaction_date" type="date" />
+            <p v-if="errorFor('transaction_date')" class="mt-1 text-xs text-rose-600">{{ errorFor("transaction_date") }}</p>
+          </div>
+        </div>
+
+        <div class="mt-3 grid gap-3 md:grid-cols-[1fr_auto]">
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-slate-900">Catatan</label>
+            <Textarea v-model="createForm.notes" :rows="3" placeholder="Tambahkan vendor, kebutuhan approval, atau detail transaksi." />
+            <p v-if="errorFor('notes')" class="mt-1 text-xs text-rose-600">{{ errorFor("notes") }}</p>
+          </div>
+          <div class="flex items-end">
+            <Button :disabled="createForm.processing" @click="submitCreate">{{ createForm.processing ? "Menyimpan..." : "Simpan Transaksi" }}</Button>
+          </div>
+        </div>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>
