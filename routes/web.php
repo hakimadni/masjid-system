@@ -16,7 +16,11 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\Public\PortalController;
 
-Route::get('/', [PortalController::class, 'home'])->name('public.home');
+Route::get('/', function () {
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+    ]);
+})->name('public.landing');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
@@ -76,11 +80,6 @@ Route::middleware('auth')->group(function () {
 });
 
 // Public routes
-Route::get('/tentang-kami', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-    ]);
-})->name('public.landing');
 
 Route::get('/jadwal-shalat', [PrayerTimesController::class, 'index'])
     ->name('public.prayer-times');

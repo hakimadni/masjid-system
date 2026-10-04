@@ -110,7 +110,7 @@ const features = [
                             <Link href="/login" class="rounded-lg bg-emerald-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 transition-all">
                                 Masuk ke Dashboard Utama
                             </Link>
-                            <Link href="/" class="text-sm font-semibold leading-6 text-white flex items-center gap-2 hover:text-emerald-300 transition-colors">
+                            <Link href="/portal" class="text-sm font-semibold leading-6 text-white flex items-center gap-2 hover:text-emerald-300 transition-colors">
                                 Lihat Portal Jamaah <span aria-hidden="true">→</span>
                             </Link>
                         </div>

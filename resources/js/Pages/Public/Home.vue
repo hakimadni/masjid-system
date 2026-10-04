@@ -36,7 +36,7 @@ const formatCurrency = (value) =>
           </div>
         </div>
         <nav class="hidden md:flex gap-8">
-          <Link href="/" class="text-sm font-semibold text-white transition-colors">Beranda</Link>
+          <Link href="/portal" class="text-sm font-semibold text-white transition-colors">Beranda</Link>
           <Link href="/profil" class="text-sm font-medium text-slate-300 hover:text-emerald-400 transition-colors">Profil</Link>
           <Link href="/jadwal" class="text-sm font-medium text-slate-300 hover:text-emerald-400 transition-colors">Jadwal</Link>
           <Link href="/kajian" class="text-sm font-medium text-slate-300 hover:text-emerald-400 transition-colors">Kajian</Link>
