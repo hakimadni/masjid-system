@@ -1,11 +1,12 @@
 <script setup>
 import { computed, ref, useSlots } from "vue"
 import { Link, usePage } from "@inertiajs/vue3"
-import { Building2, ChevronRight, ChevronDown, Menu, Search } from "lucide-vue-next"
+import { ChevronRight, ChevronDown, Menu, Search } from "lucide-vue-next"
 import Button from "@/Components/ui/button/Button.vue"
 import Breadcrumbs from "@/Components/ui/navigation/Breadcrumbs.vue"
 import SheetPanel from "@/Components/ui/sheet/SheetPanel.vue"
 import UserMenu from "@/Components/ui/menu/UserMenu.vue"
+import ApplicationLogo from "@/Components/ApplicationLogo.vue"
 import {
   buildBreadcrumbs,
   findCurrentNavItem,
@@ -58,7 +59,7 @@ const expandedGroups = ref(new Set())
           <div class="border-b border-slate-200/80 px-6 py-6">
             <div class="flex items-center gap-4">
               <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
-                <Building2 class="h-6 w-6" />
+                <ApplicationLogo class="h-8 w-8" />
               </div>
               <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">MasjidOS</p>

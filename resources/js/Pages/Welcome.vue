@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { 
   BuildingLibraryIcon, 
   BanknotesIcon, 
@@ -79,7 +80,7 @@ const features = [
                 <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
                     <div class="flex lg:flex-1 items-center gap-3">
                         <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                            <span class="text-white font-bold text-xl">م</span>
+                            <ApplicationLogo class="w-6 h-6 text-white" />
                         </div>
                         <span class="font-bold text-white tracking-wide text-xl">MasjidOS</span>
                     </div>

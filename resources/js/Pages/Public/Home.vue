@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link } from "@inertiajs/vue3"
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 
 const props = defineProps({
   mosque: { type: Object, required: true },
@@ -27,7 +28,7 @@ const formatCurrency = (value) =>
       <div class="container mx-auto px-6 py-4 flex justify-between items-center">
         <div class="flex items-center gap-3 group cursor-pointer">
           <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-105 transition-transform">
-            <span class="text-white font-bold text-xl">م</span>
+            <ApplicationLogo class="w-6 h-6 text-white" />
           </div>
           <div>
             <h1 class="font-bold text-white tracking-wide">{{ mosque?.name || 'MasjidOS' }}</h1>
