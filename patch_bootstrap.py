@@ -1,9 +1,9 @@
-import axios from 'axios';
-window.axios = axios;
+import re
 
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+with open('/Users/user/Work/masjid-system/resources/js/bootstrap.js', 'r') as f:
+    content = f.read()
 
-
+interceptor = """
 // Marbot-Friendly Human-Readable Error Interceptor
 window.axios.interceptors.response.use(
     (response) => response,
@@ -42,3 +42,10 @@ window.axios.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+"""
+
+if "interceptors.response" not in content:
+    content += "\n" + interceptor
+
+with open('/Users/user/Work/masjid-system/resources/js/bootstrap.js', 'w') as f:
+    f.write(content)
