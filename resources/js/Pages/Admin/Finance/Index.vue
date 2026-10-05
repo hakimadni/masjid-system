@@ -68,11 +68,19 @@ const filteredCategories = computed(() =>
   props.categories.filter((item) => !createForm.entry_type || item.entry_type === createForm.entry_type)
 )
 
+
+const formatCurrency = (value) =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(Number(value || 0))
+
 const summaryCards = computed(() => [
-  { title: "Total Uang Masuk", value: props.summary.income_total, type: "currency" },
-  { title: "Total Uang Keluar", value: props.summary.expense_total, type: "currency" },
-  { title: "Transaksi Pending", value: props.summary.pending_total, type: "plain" },
-  { title: "Total Catatan", value: props.summary.records_total, type: "plain" },
+  { title: "Total Uang Masuk", value: formatCurrency(props.summary.income_total) },
+  { title: "Total Uang Keluar", value: formatCurrency(props.summary.expense_total) },
+  { title: "Transaksi Pending", value: props.summary.pending_total },
+  { title: "Total Catatan", value: props.summary.records_total },
 ])
 
 const errorFor = (key) => errors.value[key] ?? ""
@@ -153,12 +161,8 @@ const submitReject = () => {
           v-for="card in summaryCards"
           :key="card.title"
           :title="card.title"
-          :value="card.type === 'currency' ? undefined : card.value"
-        >
-          <template v-if="card.type === 'currency'" #value>
-            <MoneyDisplay :value="card.value" />
-          </template>
-        </StatCard></div>
+          :value="card.value"
+        /></div>
       </div>
 
       <Card class="p-5">
