@@ -54,7 +54,7 @@ const selectOption = (key) => {
       @click="toggle"
       :class="[
         'z-50 flex h-14 w-14 items-center justify-center rounded-full text-white shadow-lg transition-all duration-300',
-        isOpen ? 'bg-rose-500 rotate-45' : 'bg-emerald-600 active:scale-95'
+        isOpen ? 'bg-rose-500 text-white rotate-45 border-rose-500 shadow-rose-900/20' : 'bg-white/80 backdrop-blur-md border-white text-emerald-600 shadow-slate-900/10 ring-1 ring-slate-200/50 active:scale-95'
       ]"
     >
       <Plus class="h-6 w-6" />
