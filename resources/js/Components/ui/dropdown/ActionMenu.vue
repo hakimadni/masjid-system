@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from "vue"
 import Button from "@/Components/ui/button/Button.vue"
 import { MoreHorizontal } from "lucide-vue-next"
 
@@ -11,13 +12,20 @@ defineProps({
 
 const emit = defineEmits(["select"])
 
+
+const detailsEl = ref(null)
+
 const pick = (key) => {
   emit("select", key)
+  if (detailsEl.value) {
+    detailsEl.value.removeAttribute('open')
+  }
 }
+
 </script>
 
 <template>
-  <details class="group relative">
+  <details ref="detailsEl" class="group relative">
     <summary class="list-none">
       <Button variant="ghost" size="icon" class="h-9 w-9">
         <MoreHorizontal class="h-4 w-4" />

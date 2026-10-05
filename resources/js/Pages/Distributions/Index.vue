@@ -60,7 +60,7 @@ const slaughteringLabel = (s) => {
 
       <DataTable v-if="distributions.data.length" :data="distributions.data">
         <template #mobile-card="{ item }">
-          <div class="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-emerald-900/5 bg-white shadow-lg shadow-emerald-900/5 ring-1 ring-slate-100/50 mb-3 p-4 transition-all active:scale-95">
+          <div class="group relative flex flex-col justify-between rounded-3xl border border-emerald-900/5 bg-white shadow-lg shadow-emerald-900/5 ring-1 ring-slate-100/50 mb-3 p-4 transition-all active:scale-95">
             <div class="flex items-center justify-between">
               <div>
                 <p class="font-bold text-slate-800 text-base leading-tight truncate">{{ item.recipient_name }}</p>

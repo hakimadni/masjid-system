@@ -19,7 +19,7 @@ defineProps({ animals: Object })
           
           <!-- Mobile List -->
           <div class="block md:hidden space-y-4 mb-6">
-            <div v-for="animal in animals.data" :key="animal.id" class="group relative flex flex-col overflow-hidden rounded-3xl border border-emerald-900/5 bg-white shadow-lg shadow-emerald-900/5 ring-1 ring-slate-100/50 p-4 active:scale-95 transition-all">
+            <div v-for="animal in animals.data" :key="animal.id" class="group relative flex flex-col rounded-3xl border border-emerald-900/5 bg-white shadow-lg shadow-emerald-900/5 ring-1 ring-slate-100/50 p-4 active:scale-95 transition-all">
               <div class="flex items-center justify-between">
                 <div>
                   <p class="font-bold text-slate-800 text-base leading-tight">Hewan #{{ animal.id }} - <span class="capitalize">{{ animal.type }}</span></p>
