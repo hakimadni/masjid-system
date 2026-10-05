@@ -59,6 +59,16 @@ const rejectionForm = useForm({
 })
 
 const createDialogOpen = ref(false)
+const detailDialog = ref({ open: false, item: null })
+
+const openDetailDialog = (item) => {
+  detailDialog.value.item = item
+  detailDialog.value.open = true
+}
+const closeDetailDialog = () => {
+  detailDialog.value.open = false
+  setTimeout(() => { detailDialog.value.item = null }, 300)
+}
 const rejectionDialog = ref({
   open: false,
   itemId: null,
@@ -116,8 +126,14 @@ const actionItems = (item) => [
 ]
 
 const handleAction = (item, key) => {
-  if (key === "approve") updateStatus(item.id, "approved")
-  if (key === "reject") openRejectDialog(item.id)
+  if (key === "approve") {
+    updateStatus(item.id, "approved")
+    closeDetailDialog()
+  }
+  if (key === "reject") {
+    openRejectDialog(item.id)
+    closeDetailDialog()
+  }
 }
 
 const openRejectDialog = (id) => {
@@ -213,7 +229,7 @@ const submitReject = () => {
           <template v-else>
             <DataTable v-if="financeEntries.data.length" :data="financeEntries.data">
               <template #mobile-card="{ item }">
-                <div class="group relative flex flex-col justify-between rounded-3xl border border-emerald-900/5 bg-white shadow-lg shadow-emerald-900/5 ring-1 ring-slate-100/50 mb-3 p-4 transition-all active:scale-95">
+                <div @click="openDetailDialog(item)" class="cursor-pointer group relative flex flex-col justify-between rounded-3xl border border-emerald-900/5 bg-white shadow-lg shadow-emerald-900/5 ring-1 ring-slate-100/50 mb-3 p-4 transition-all active:scale-95">
                   <div class="flex items-start justify-between gap-2">
                      <div class="flex items-start gap-3 min-w-0">
                         <div :class="[
@@ -234,7 +250,6 @@ const submitReject = () => {
                         </p>
                         <div class="flex justify-end mt-1 items-center gap-1">
                           <StatusBadge size="sm" :status="item.status" />
-                          <ActionMenu :items="actionItems(item)" @select="handleAction(item, $event)" />
                         </div>
                      </div>
                   </div>
@@ -251,7 +266,7 @@ const submitReject = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="item in financeEntries.data" :key="item.id" class="border-t border-slate-100">
+                <tr v-for="item in financeEntries.data" :key="item.id" @click="openDetailDialog(item)" class="border-t border-slate-100 cursor-pointer hover:bg-slate-50 transition-colors">
                   <td class="px-4 py-3">
                     <p class="font-medium text-slate-900">{{ item.title }}</p>
                     <p class="text-xs text-slate-500">{{ item.reference_no }} • {{ item.transaction_date }}</p>
@@ -264,8 +279,8 @@ const submitReject = () => {
                   </td>
                   <td class="px-4 py-3"><StatusBadge :status="item.status" /></td>
                   <td class="px-4 py-3 text-right">
-                    <div class="flex justify-end">
-                      <ActionMenu :items="actionItems(item)" @select="handleAction(item, $event)" />
+                    <div class="flex justify-end text-slate-400">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                     </div>
                   </td>
                 </tr>
@@ -298,6 +313,50 @@ const submitReject = () => {
     >
       <Textarea v-model="rejectionForm.rejected_reason" :rows="3" placeholder="Masukkan alasan penolakan..." />
     </ConfirmDialog>
+    
+    <Dialog :open="detailDialog.open" @update:open="detailDialog.open = $event" @close="closeDetailDialog">
+      <div class="p-5 overflow-y-auto max-h-[85vh]" v-if="detailDialog.item">
+        <p class="text-sm font-semibold text-slate-900 mb-4">Detail Transaksi</p>
+        
+        <div class="flex gap-3 mb-6" v-if="detailDialog.item.status === 'pending'">
+            <Button variant="success" class="flex-1 shadow-md" @click="handleAction(detailDialog.item, 'approve')">Setujui (Approve)</Button>
+            <button class="flex-1 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-medium text-sm shadow-md shadow-rose-950/10" @click="handleAction(detailDialog.item, 'reject')">Tolak (Reject)</button>
+        </div>
+        <div class="flex gap-3 mb-6" v-else>
+            <div class="flex-1 text-center bg-slate-50 p-3 rounded-xl border border-slate-100 flex flex-col items-center justify-center">
+               <p class="text-xs text-slate-500 mb-2">Status Saat Ini</p>
+               <StatusBadge :status="detailDialog.item.status" />
+            </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-slate-900 mb-4">{{ detailDialog.item.title }}</h3>
+        <div class="space-y-3 text-sm">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <span class="text-slate-500">Nominal</span>
+                <span class="font-bold text-slate-900 text-base"><MoneyDisplay :value="detailDialog.item.amount" /></span>
+            </div>
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <span class="text-slate-500">Tipe</span>
+                <span class="font-medium" :class="detailDialog.item.entry_type === 'income' ? 'text-emerald-600' : 'text-rose-600'">
+                  {{ detailDialog.item.entry_type === 'income' ? 'Uang Masuk' : 'Uang Keluar' }}
+                </span>
+            </div>
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <span class="text-slate-500">Kategori</span>
+                <span class="font-medium text-slate-900">{{ detailDialog.item.category }}</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <span class="text-slate-500">Tanggal</span>
+                <span class="font-medium text-slate-900">{{ detailDialog.item.transaction_date }}</span>
+            </div>
+            <div v-if="detailDialog.item.notes" class="pt-2">
+                <span class="block text-slate-500 mb-1 text-xs">Catatan / Keterangan</span>
+                <p class="text-slate-900 bg-slate-50 p-3 rounded-xl leading-relaxed">{{ detailDialog.item.notes }}</p>
+            </div>
+        </div>
+      </div>
+    </Dialog>
+
     <MobileFab @click="scrollToForm" />
   
     <MobileFab @click="createDialogOpen = true" />
