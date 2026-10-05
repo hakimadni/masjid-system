@@ -26,6 +26,8 @@ class AdminScheduleStoreRequest extends FormRequest
                 'khatib_name' => ['nullable', 'string', 'max:150'],
                 'status' => ['required', 'in:draft,published,completed,archived'],
                 'notes' => ['nullable', 'string', 'max:1000'],
+            'recurrence' => ['nullable', 'in:none,daily,weekly,monthly'],
+                'recurrence' => ['nullable', 'in:none,daily,weekly,monthly'],
             ];
         }
 
@@ -38,6 +40,8 @@ class AdminScheduleStoreRequest extends FormRequest
             'scheduled_at' => ['required', 'date'],
             'status' => ['required', 'in:draft,published,completed,archived'],
             'notes' => ['nullable', 'string', 'max:1000'],
+            'recurrence' => ['nullable', 'in:none,daily,weekly,monthly'],
+                'recurrence' => ['nullable', 'in:none,daily,weekly,monthly'],
         ];
     }
 }

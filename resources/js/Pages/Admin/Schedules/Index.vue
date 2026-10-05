@@ -15,6 +15,7 @@ import StatusBadge from "@/Components/ui/status/StatusBadge.vue"
 import ActionMenu from "@/Components/ui/dropdown/ActionMenu.vue"
 import Dialog from "@/Components/ui/dialog/Dialog.vue"
 import MobileFab from "@/Components/MobileFab.vue"
+import SpeedDialFab from "@/Components/ui/button/SpeedDialFab.vue"
 import ConfirmDialog from "@/Components/ui/dialog/ConfirmDialog.vue"
 import PageHeader from "@/Components/ui/page/PageHeader.vue"
 
@@ -61,10 +62,14 @@ const scrollToTab = (tab) => {
 }
 
 const createDialogOpen = ref(false)
+const activeFormType = ref('prayer')
+const openForm = (type) => { activeFormType.value = type; createDialogOpen.value = true }
+
 const prayerForm = useForm({
   kind: "prayer",
   schedule_date: new Date().toISOString().slice(0, 10),
   prayer_name: "subuh",
+  recurrence: "none",
   prayer_time: "",
   imam_name: "",
   muadzin_name: "",
@@ -349,11 +354,18 @@ const handleServiceAction = (item, key) => {
       />
     </div>
   
-    <MobileFab @click="createDialogOpen = true" />
+    <SpeedDialFab 
+      :options="[
+        {key: 'prayer', label: 'Tambah Shalat/Khatib'}, 
+        {key: 'service', label: 'Tambah Jadwal Petugas'}
+      ]" 
+      @select="openForm" 
+    />
     <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
       <div class="p-5 max-h-[85vh] overflow-y-auto">
-        <p class="text-sm font-semibold text-slate-900">Jadwal Shalat / Khatib</p>
-          <div class="mt-4 grid gap-3 md:grid-cols-2">
+        <h2 class="text-xl font-bold mb-4">{{ activeFormType === "prayer" ? "Tambah Jadwal Shalat" : "Tambah Jadwal Petugas" }}</h2>
+        
+          <div class="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-2">
             <div>
               <label class="mb-1.5 block text-sm font-medium text-slate-900">Tanggal</label>
               <Input v-model="prayerForm.schedule_date" type="date" />
@@ -409,8 +421,8 @@ const handleServiceAction = (item, key) => {
           </div>
           <div class="mt-3">
             <Button class="w-full" :disabled="prayerForm.processing" @click="submitPrayer">{{ prayerForm.processing ? "Menyimpan..." : "Simpan Jadwal Shalat" }}</Button>
-          </div><hr class="my-6 border-slate-200" /><p class="text-sm font-semibold text-slate-900">Jadwal Petugas</p>
-          <div class="mt-4 grid gap-3 md:grid-cols-2">
+          </div>
+          <div class="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-2">
             <div>
               <label class="mb-1.5 block text-sm font-medium text-slate-900">Judul tugas / agenda</label>
               <Input v-model="serviceForm.title" placeholder="Contoh: Petugas kajian malam Jumat" />
