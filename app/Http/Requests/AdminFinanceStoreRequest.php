@@ -39,6 +39,7 @@ class AdminFinanceStoreRequest extends FormRequest
             'status' => ['required', 'in:draft,pending,approved,rejected'],
             'transaction_date' => ['required', 'date'],
             'notes' => ['nullable', 'string', 'max:500'],
+            'attachment' => ['nullable', 'file', 'image', 'max:5120'],
         ];
     }
 

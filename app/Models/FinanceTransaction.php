@@ -23,10 +23,18 @@ class FinanceTransaction extends Model
         'payment_method',
         'reference_no',
         'notes',
+        'attachment',
         'created_by',
         'approved_by',
         'approved_at',
     ];
+
+    protected $appends = ['attachment_url'];
+
+    public function getAttachmentUrlAttribute()
+    {
+        return $this->attachment ? asset('storage/' . $this->attachment) : null;
+    }
 
     protected function casts(): array
     {

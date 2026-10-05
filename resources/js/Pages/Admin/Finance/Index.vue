@@ -51,6 +51,7 @@ const createForm = useForm({
   status: "pending",
   transaction_date: new Date().toISOString().slice(0, 10),
   notes: "",
+  attachment: null,
 })
 
 const rejectionForm = useForm({
@@ -114,7 +115,7 @@ const resetFilters = () => {
   applyFilters()
 }
 
-const submitCreate = () => createForm.post(route("finance.store"), { preserveScroll: true, onSuccess: () => { createDialogOpen.value = false; createForm.reset() } })
+const submitCreate = () => createForm.post(route("finance.store"), { preserveScroll: true, forceFormData: true, onSuccess: () => { createDialogOpen.value = false; createForm.reset() } })
 
 const updateStatus = (id, status) =>
   useForm({ status }).patch(route("finance.update-status", id), { preserveScroll: true })
@@ -352,6 +353,12 @@ const submitReject = () => {
             <div v-if="detailDialog.item.notes" class="pt-2">
                 <span class="block text-slate-500 mb-1 text-xs">Catatan / Keterangan</span>
                 <p class="text-slate-900 bg-slate-50 p-3 rounded-xl leading-relaxed">{{ detailDialog.item.notes }}</p>
+            </div>
+            <div v-if="detailDialog.item.attachment_url" class="pt-2">
+                <span class="block text-slate-500 mb-2 text-xs">Bukti Lampiran / Nota</span>
+                <a :href="detailDialog.item.attachment_url" target="_blank">
+                  <img :src="detailDialog.item.attachment_url" class="w-full h-auto rounded-xl border border-slate-200 shadow-sm" alt="Bukti Transaksi" />
+                </a>
             </div>
         </div>
       </div>

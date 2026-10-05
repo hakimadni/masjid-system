@@ -10,6 +10,7 @@ use App\Models\FinanceTransaction;
 use App\Services\AuditLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -151,6 +152,11 @@ class FinanceController extends Controller
         $validated = $request->validated();
         $user = $request->user();
 
+        $attachmentPath = null;
+        if ($request->hasFile('attachment')) {
+            $attachmentPath = $request->file('attachment')->store('finance_proofs', 'public');
+        }
+
         $transaction = FinanceTransaction::query()->create([
             'mosque_id' => $user->mosque_id,
             'finance_account_id' => $validated['finance_account_id'] ?? null,
@@ -163,6 +169,7 @@ class FinanceController extends Controller
             'payment_method' => $validated['payment_method'],
             'reference_no' => $this->makeReference('FIN'),
             'notes' => $validated['notes'] ?? null,
+            'attachment' => $attachmentPath,
             'created_by' => $user->id,
             'approved_by' => $validated['status'] === 'approved' ? $user->id : null,
             'approved_at' => $validated['status'] === 'approved' ? now() : null,
@@ -334,6 +341,7 @@ class FinanceController extends Controller
             'rejected_reason' => $transaction->rejected_reason,
             'category' => $transaction->category?->name ?? '-',
             'account' => $transaction->account?->name ?? '-',
+            'attachment_url' => $transaction->attachment_url,
         ];
     }
 
