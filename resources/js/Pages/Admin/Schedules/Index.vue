@@ -13,6 +13,8 @@ import Select from "@/Components/ui/select/Select.vue"
 import Textarea from "@/Components/ui/textarea/Textarea.vue"
 import StatusBadge from "@/Components/ui/status/StatusBadge.vue"
 import ActionMenu from "@/Components/ui/dropdown/ActionMenu.vue"
+import Dialog from "@/Components/ui/dialog/Dialog.vue"
+import MobileFab from "@/Components/MobileFab.vue"
 import ConfirmDialog from "@/Components/ui/dialog/ConfirmDialog.vue"
 import PageHeader from "@/Components/ui/page/PageHeader.vue"
 
@@ -58,6 +60,7 @@ const scrollToTab = (tab) => {
   })
 }
 
+const createDialogOpen = ref(false)
 const prayerForm = useForm({
   kind: "prayer",
   schedule_date: new Date().toISOString().slice(0, 10),
@@ -106,8 +109,8 @@ const resetFilters = () => {
   applyFilters()
 }
 
-const submitPrayer = () => prayerForm.post(route("schedules.store-prayer"), { preserveScroll: true })
-const submitService = () => serviceForm.post(route("schedules.store-service"), { preserveScroll: true })
+const submitPrayer = () => prayerForm.post(route("schedules.store-prayer"), { preserveScroll: true, onSuccess: () => { createDialogOpen.value = false; prayerForm.reset(); } })
+const submitService = () => serviceForm.post(route("schedules.store-service"), { preserveScroll: true, onSuccess: () => { createDialogOpen.value = false; serviceForm.reset(); } })
 
 const updatePrayerStatus = (id, status) =>
   useForm({ status }).patch(route("schedules.prayer-status", id), { preserveScroll: true })
@@ -229,121 +232,9 @@ const handleServiceAction = (item, key) => {
       </Card>
 
       <div class="grid gap-6 xl:grid-cols-2">
-        <Card class="p-5" ref="prayerSection">
-          <p class="text-sm font-semibold text-slate-900">Jadwal Shalat / Khatib</p>
-          <div class="mt-4 grid gap-3 md:grid-cols-2">
-            <div>
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Tanggal</label>
-              <Input v-model="prayerForm.schedule_date" type="date" />
-              <p v-if="errorFor('schedule_date')" class="mt-1 text-xs text-rose-600">{{ errorFor("schedule_date") }}</p>
-            </div>
-            <div>
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama shalat</label>
-              <Select v-model="prayerForm.prayer_name">
-                <option value="subuh">Subuh</option>
-                <option value="dzuhur">Dzuhur</option>
-                <option value="ashar">Ashar</option>
-                <option value="maghrib">Maghrib</option>
-                <option value="isya">Isya</option>
-                <option value="jumat">Jumat</option>
-              </Select>
-              <p v-if="errorFor('prayer_name')" class="mt-1 text-xs text-rose-600">{{ errorFor("prayer_name") }}</p>
-            </div>
-            <div>
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Waktu</label>
-              <Input v-model="prayerForm.prayer_time" type="time" />
-              <p v-if="errorFor('prayer_time')" class="mt-1 text-xs text-rose-600">{{ errorFor("prayer_time") }}</p>
-            </div>
-            <div>
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Status</label>
-              <Select v-model="prayerForm.status">
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-                <option value="completed">Completed</option>
-                <option value="archived">Archived</option>
-              </Select>
-              <p v-if="errorFor('status')" class="mt-1 text-xs text-rose-600">{{ errorFor("status") }}</p>
-            </div>
-            <div>
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama imam</label>
-              <Input v-model="prayerForm.imam_name" placeholder="Nama imam" />
-              <p v-if="errorFor('imam_name')" class="mt-1 text-xs text-rose-600">{{ errorFor("imam_name") }}</p>
-            </div>
-            <div>
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama muadzin</label>
-              <Input v-model="prayerForm.muadzin_name" placeholder="Nama muadzin" />
-              <p v-if="errorFor('muadzin_name')" class="mt-1 text-xs text-rose-600">{{ errorFor("muadzin_name") }}</p>
-            </div>
-            <div class="md:col-span-2">
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama khatib</label>
-              <Input v-model="prayerForm.khatib_name" placeholder="Opsional untuk jadwal Jumat" />
-              <p v-if="errorFor('khatib_name')" class="mt-1 text-xs text-rose-600">{{ errorFor("khatib_name") }}</p>
-            </div>
-            <div class="md:col-span-2">
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Catatan</label>
-              <Textarea v-model="prayerForm.notes" :rows="3" placeholder="Tambahkan catatan perubahan petugas atau konteks jadwal." />
-              <p v-if="errorFor('notes')" class="mt-1 text-xs text-rose-600">{{ errorFor("notes") }}</p>
-            </div>
-          </div>
-          <div class="mt-3">
-            <Button class="w-full" :disabled="prayerForm.processing" @click="submitPrayer">{{ prayerForm.processing ? "Menyimpan..." : "Simpan Jadwal Shalat" }}</Button>
-          </div>
-        </Card>
+        
 
-        <Card class="p-5" ref="serviceSection">
-          <p class="text-sm font-semibold text-slate-900">Jadwal Petugas</p>
-          <div class="mt-4 grid gap-3 md:grid-cols-2">
-            <div>
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Judul tugas / agenda</label>
-              <Input v-model="serviceForm.title" placeholder="Contoh: Petugas kajian malam Jumat" />
-              <p v-if="errorFor('title')" class="mt-1 text-xs text-rose-600">{{ errorFor("title") }}</p>
-            </div>
-            <div>
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Jenis petugas</label>
-              <Select v-model="serviceForm.role_type">
-                <option value="imam">Imam</option>
-                <option value="muadzin">Muadzin</option>
-                <option value="khatib">Khatib</option>
-                <option value="petugas">Petugas</option>
-                <option value="kegiatan">Kegiatan</option>
-              </Select>
-              <p v-if="errorFor('role_type')" class="mt-1 text-xs text-rose-600">{{ errorFor("role_type") }}</p>
-            </div>
-            <div>
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama petugas</label>
-              <Input v-model="serviceForm.person_name" placeholder="Nama petugas" />
-              <p v-if="errorFor('person_name')" class="mt-1 text-xs text-rose-600">{{ errorFor("person_name") }}</p>
-            </div>
-            <div>
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Lokasi</label>
-              <Input v-model="serviceForm.location" placeholder="Aula utama / serambi" />
-              <p v-if="errorFor('location')" class="mt-1 text-xs text-rose-600">{{ errorFor("location") }}</p>
-            </div>
-            <div>
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Waktu terjadwal</label>
-              <Input v-model="serviceForm.scheduled_at" type="datetime-local" />
-              <p v-if="errorFor('scheduled_at')" class="mt-1 text-xs text-rose-600">{{ errorFor("scheduled_at") }}</p>
-            </div>
-            <div>
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Status</label>
-              <Select v-model="serviceForm.status">
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-                <option value="completed">Completed</option>
-                <option value="archived">Archived</option>
-              </Select>
-              <p v-if="errorFor('status')" class="mt-1 text-xs text-rose-600">{{ errorFor("status") }}</p>
-            </div>
-            <div class="md:col-span-2">
-              <label class="mb-1.5 block text-sm font-medium text-slate-900">Catatan</label>
-              <Textarea v-model="serviceForm.notes" :rows="3" placeholder="Tambahkan kebutuhan perlengkapan, PIC, atau pengingat." />
-              <p v-if="errorFor('notes')" class="mt-1 text-xs text-rose-600">{{ errorFor("notes") }}</p>
-            </div>
-          </div>
-          <div class="mt-3">
-            <Button class="w-full" :disabled="serviceForm.processing" @click="submitService">{{ serviceForm.processing ? "Menyimpan..." : "Simpan Jadwal Petugas" }}</Button>
-          </div>
-        </Card>
+        
       </div>
 
       <div class="grid gap-6 xl:grid-cols-2">
@@ -457,5 +348,121 @@ const handleServiceAction = (item, key) => {
         @confirm="destroySelected"
       />
     </div>
+  
+    <MobileFab @click="createDialogOpen = true" />
+    <Dialog :open="createDialogOpen" @close="createDialogOpen = false">
+      <div class="p-5 max-h-[85vh] overflow-y-auto">
+        <p class="text-sm font-semibold text-slate-900">Jadwal Shalat / Khatib</p>
+          <div class="mt-4 grid gap-3 md:grid-cols-2">
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Tanggal</label>
+              <Input v-model="prayerForm.schedule_date" type="date" />
+              <p v-if="errorFor('schedule_date')" class="mt-1 text-xs text-rose-600">{{ errorFor("schedule_date") }}</p>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama shalat</label>
+              <Select v-model="prayerForm.prayer_name">
+                <option value="subuh">Subuh</option>
+                <option value="dzuhur">Dzuhur</option>
+                <option value="ashar">Ashar</option>
+                <option value="maghrib">Maghrib</option>
+                <option value="isya">Isya</option>
+                <option value="jumat">Jumat</option>
+              </Select>
+              <p v-if="errorFor('prayer_name')" class="mt-1 text-xs text-rose-600">{{ errorFor("prayer_name") }}</p>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Waktu</label>
+              <Input v-model="prayerForm.prayer_time" type="time" />
+              <p v-if="errorFor('prayer_time')" class="mt-1 text-xs text-rose-600">{{ errorFor("prayer_time") }}</p>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Status</label>
+              <Select v-model="prayerForm.status">
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+                <option value="completed">Completed</option>
+                <option value="archived">Archived</option>
+              </Select>
+              <p v-if="errorFor('status')" class="mt-1 text-xs text-rose-600">{{ errorFor("status") }}</p>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama imam</label>
+              <Input v-model="prayerForm.imam_name" placeholder="Nama imam" />
+              <p v-if="errorFor('imam_name')" class="mt-1 text-xs text-rose-600">{{ errorFor("imam_name") }}</p>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama muadzin</label>
+              <Input v-model="prayerForm.muadzin_name" placeholder="Nama muadzin" />
+              <p v-if="errorFor('muadzin_name')" class="mt-1 text-xs text-rose-600">{{ errorFor("muadzin_name") }}</p>
+            </div>
+            <div class="md:col-span-2">
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama khatib</label>
+              <Input v-model="prayerForm.khatib_name" placeholder="Opsional untuk jadwal Jumat" />
+              <p v-if="errorFor('khatib_name')" class="mt-1 text-xs text-rose-600">{{ errorFor("khatib_name") }}</p>
+            </div>
+            <div class="md:col-span-2">
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Catatan</label>
+              <Textarea v-model="prayerForm.notes" :rows="3" placeholder="Tambahkan catatan perubahan petugas atau konteks jadwal." />
+              <p v-if="errorFor('notes')" class="mt-1 text-xs text-rose-600">{{ errorFor("notes") }}</p>
+            </div>
+          </div>
+          <div class="mt-3">
+            <Button class="w-full" :disabled="prayerForm.processing" @click="submitPrayer">{{ prayerForm.processing ? "Menyimpan..." : "Simpan Jadwal Shalat" }}</Button>
+          </div><hr class="my-6 border-slate-200" /><p class="text-sm font-semibold text-slate-900">Jadwal Petugas</p>
+          <div class="mt-4 grid gap-3 md:grid-cols-2">
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Judul tugas / agenda</label>
+              <Input v-model="serviceForm.title" placeholder="Contoh: Petugas kajian malam Jumat" />
+              <p v-if="errorFor('title')" class="mt-1 text-xs text-rose-600">{{ errorFor("title") }}</p>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Jenis petugas</label>
+              <Select v-model="serviceForm.role_type">
+                <option value="imam">Imam</option>
+                <option value="muadzin">Muadzin</option>
+                <option value="khatib">Khatib</option>
+                <option value="petugas">Petugas</option>
+                <option value="kegiatan">Kegiatan</option>
+              </Select>
+              <p v-if="errorFor('role_type')" class="mt-1 text-xs text-rose-600">{{ errorFor("role_type") }}</p>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Nama petugas</label>
+              <Input v-model="serviceForm.person_name" placeholder="Nama petugas" />
+              <p v-if="errorFor('person_name')" class="mt-1 text-xs text-rose-600">{{ errorFor("person_name") }}</p>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Lokasi</label>
+              <Input v-model="serviceForm.location" placeholder="Aula utama / serambi" />
+              <p v-if="errorFor('location')" class="mt-1 text-xs text-rose-600">{{ errorFor("location") }}</p>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Waktu terjadwal</label>
+              <Input v-model="serviceForm.scheduled_at" type="datetime-local" />
+              <p v-if="errorFor('scheduled_at')" class="mt-1 text-xs text-rose-600">{{ errorFor("scheduled_at") }}</p>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Status</label>
+              <Select v-model="serviceForm.status">
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+                <option value="completed">Completed</option>
+                <option value="archived">Archived</option>
+              </Select>
+              <p v-if="errorFor('status')" class="mt-1 text-xs text-rose-600">{{ errorFor("status") }}</p>
+            </div>
+            <div class="md:col-span-2">
+              <label class="mb-1.5 block text-sm font-medium text-slate-900">Catatan</label>
+              <Textarea v-model="serviceForm.notes" :rows="3" placeholder="Tambahkan kebutuhan perlengkapan, PIC, atau pengingat." />
+              <p v-if="errorFor('notes')" class="mt-1 text-xs text-rose-600">{{ errorFor("notes") }}</p>
+            </div>
+          </div>
+          <div class="mt-3">
+            <Button class="w-full" :disabled="serviceForm.processing" @click="submitService">{{ serviceForm.processing ? "Menyimpan..." : "Simpan Jadwal Petugas" }}</Button>
+          </div>
+      </div>
+    </Dialog>
   </AuthenticatedLayout>
+
 </template>
