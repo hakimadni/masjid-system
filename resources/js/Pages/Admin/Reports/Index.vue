@@ -8,10 +8,68 @@ import DataTable from "@/Components/ui/table/DataTable.vue"
 import EmptyState from "@/Components/ui/empty/EmptyState.vue"
 import Input from "@/Components/ui/input/Input.vue"
 import StatusBadge from "@/Components/ui/status/StatusBadge.vue"
+import Download from "lucide-vue-next/dist/esm/icons/download.js"
+
+// ChartJS imports
+import { Bar, Line, Doughnut } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  ArcElement
+} from 'chart.js'
+
+ChartJS.register(
+  Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, ArcElement
+)
+
+const chartOptionsCurrency = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: true },
+    tooltip: {
+      callbacks: {
+        label: function(context) {
+          let label = context.dataset.label || '';
+          if (label) label += ': ';
+          if (context.parsed.y !== null) {
+            label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(context.parsed.y);
+          }
+          return label;
+        }
+      }
+    }
+  },
+  scales: {
+    y: {
+      ticks: {
+        callback: function(value) {
+          return new Intl.NumberFormat('id-ID', { notation: "compact" }).format(value);
+        }
+      }
+    }
+  }
+}
+
+const chartOptionsPie = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { position: 'bottom' }
+  }
+}
 
 const props = defineProps({
   filters: { type: Object, required: true },
   summary: { type: Object, required: true },
+  chartData: { type: Object, required: true },
   recentFinance: { type: Array, required: true },
   campaignBreakdown: { type: Array, required: true },
   upcomingEvents: { type: Array, required: true },
@@ -23,12 +81,20 @@ const filterForm = useForm({
   end_date: props.filters.end_date ?? "",
 })
 
-const applyFilters = () =>
+const applyFilters = () => {
   router.get(route("reports.index"), filterForm.data(), {
     preserveState: true,
     replace: true,
     preserveScroll: true,
   })
+}
+
+const exportUrl = () => {
+  const url = new URL(route('reports.export'));
+  if (filterForm.start_date) url.searchParams.append('start_date', filterForm.start_date);
+  if (filterForm.end_date) url.searchParams.append('end_date', filterForm.end_date);
+  return url.toString();
+}
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat("id-ID", {
@@ -67,6 +133,59 @@ const formatCurrency = (value) =>
       </div>
 
       <div class="grid gap-6 xl:grid-cols-2">
+        <Card class="flex flex-col p-0">
+          <div class="border-b border-slate-200 px-5 py-4">
+            <p class="text-sm font-semibold text-slate-900">Tren Pemasukan & Pengeluaran</p>
+            <p class="text-xs text-slate-500 mt-1">Grafik kinerja keuangan dalam 6 bulan terakhir</p>
+          </div>
+          <div class="flex-1 flex flex-col p-5">
+            <div class="h-[250px] w-full mb-6">
+                <Bar v-if="chartData.keuangan_bulanan" :data="chartData.keuangan_bulanan" :options="chartOptionsCurrency" />
+            </div>
+            <div class="mt-auto">
+                <Button as="a" :href="exportUrl()" variant="outline" class="w-full">
+                    <Download class="mr-2 h-4 w-4" /> Download Excel Keuangan
+                </Button>
+            </div>
+          </div>
+        </Card>
+
+        <Card class="flex flex-col p-0">
+          <div class="border-b border-slate-200 px-5 py-4">
+            <p class="text-sm font-semibold text-slate-900">Breakdown Campaign Donasi</p>
+            <p class="text-xs text-slate-500 mt-1">Distribusi dana donasi menurut program (Top 5)</p>
+          </div>
+          <div class="flex-1 flex flex-col p-5">
+            <div class="h-[250px] w-full mb-6">
+                <Doughnut v-if="chartData.donasi_campaign" :data="chartData.donasi_campaign" :options="chartOptionsPie" />
+            </div>
+            <div class="mt-auto">
+                <Button as="a" :href="exportUrl() + '&type=donasi'" variant="outline" class="w-full">
+                    <Download class="mr-2 h-4 w-4" /> Download Excel Donasi
+                </Button>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div class="grid gap-6 xl:grid-cols-2">
+        <Card class="flex flex-col p-0">
+          <div class="border-b border-slate-200 px-5 py-4">
+            <p class="text-sm font-semibold text-slate-900">Kondisi Inventaris Aset</p>
+            <p class="text-xs text-slate-500 mt-1">Rangkuman kondisi fasilitas masjid</p>
+          </div>
+          <div class="flex-1 flex flex-col p-5">
+            <div class="h-[250px] w-full mb-6">
+                <Doughnut v-if="chartData.aset_kondisi" :data="chartData.aset_kondisi" :options="chartOptionsPie" />
+            </div>
+            <div class="mt-auto">
+                <Button as="a" :href="exportUrl() + '&type=aset'" variant="outline" class="w-full">
+                    <Download class="mr-2 h-4 w-4" /> Download Laporan Aset
+                </Button>
+            </div>
+          </div>
+        </Card>
+
         <Card class="p-0">
           <div class="border-b border-slate-200 px-5 py-4">
             <p class="text-sm font-semibold text-slate-900">Transaksi Terbaru</p>
@@ -101,37 +220,6 @@ const formatCurrency = (value) =>
 
         <Card class="p-0">
           <div class="border-b border-slate-200 px-5 py-4">
-            <p class="text-sm font-semibold text-slate-900">Breakdown Campaign Donasi</p>
-          </div>
-          <div class="p-5">
-            <DataTable v-if="campaignBreakdown.length">
-              <thead class="bg-slate-50 text-xs uppercase text-slate-500">
-                <tr>
-                  <th class="px-4 py-3 text-left">Campaign</th>
-                  <th class="px-4 py-3 text-left">Catatan</th>
-                  <th class="px-4 py-3 text-left">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in campaignBreakdown" :key="item.campaign" class="border-t border-slate-100">
-                  <td class="px-4 py-3 font-medium text-slate-900">{{ item.campaign }}</td>
-                  <td class="px-4 py-3 text-sm text-slate-600">{{ item.total_records }} donasi</td>
-                  <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ formatCurrency(item.total_amount) }}</td>
-                </tr>
-              </tbody>
-            </DataTable>
-            <EmptyState
-              v-else
-              title="Belum ada donasi"
-              description="Breakdown donasi per campaign akan ditampilkan di sini."
-            />
-          </div>
-        </Card>
-      </div>
-
-      <div class="grid gap-6 xl:grid-cols-2">
-        <Card class="p-0">
-          <div class="border-b border-slate-200 px-5 py-4">
             <p class="text-sm font-semibold text-slate-900">Kegiatan Mendatang</p>
           </div>
           <div class="p-5">
@@ -158,33 +246,6 @@ const formatCurrency = (value) =>
               v-else
               title="Tidak ada agenda mendatang"
               description="Agenda kegiatan berikutnya akan tampil di sini."
-            />
-          </div>
-        </Card>
-
-        <Card class="p-0">
-          <div class="border-b border-slate-200 px-5 py-4">
-            <p class="text-sm font-semibold text-slate-900">Kondisi Inventaris</p>
-          </div>
-          <div class="p-5">
-            <DataTable v-if="assetConditions.length">
-              <thead class="bg-slate-50 text-xs uppercase text-slate-500">
-                <tr>
-                  <th class="px-4 py-3 text-left">Kondisi</th>
-                  <th class="px-4 py-3 text-left">Jumlah</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in assetConditions" :key="item.condition" class="border-t border-slate-100">
-                  <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ item.condition }}</td>
-                  <td class="px-4 py-3 text-sm text-slate-600">{{ item.total }}</td>
-                </tr>
-              </tbody>
-            </DataTable>
-            <EmptyState
-              v-else
-              title="Belum ada inventaris"
-              description="Ringkasan kondisi inventaris akan muncul setelah data aset tersedia."
             />
           </div>
         </Card>

@@ -1,5 +1,5 @@
 <template>
-  <Modal v-model="show" max-width="lg">
+  <Modal :show="show" max-width="lg" @close="$emit('update:show', false)">
     <template #header>
       <div class="flex justify-end space-x-2">
         <PrimaryButton @click="approve">Approve</PrimaryButton>

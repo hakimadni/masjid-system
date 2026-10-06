@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 class ReportController extends Controller
 {
     public function index(Request $request): Response
@@ -41,11 +44,88 @@ class ReportController extends Controller
             ->whereDate('start_at', '>=', $startDate)
             ->whereDate('start_at', '<=', $endDate);
 
+        // Chart Data Calculations
+        $months = [];
+        $incomeTotals = [];
+        $expenseTotals = [];
+        
+        for ($i = 5; $i >= 0; $i--) {
+            $month = Carbon::now()->subMonths($i);
+            $months[] = $month->translatedFormat('M Y');
+            
+            $incomeTotals[] = (float) FinanceTransaction::where('mosque_id', $mosqueId)
+                ->where('entry_type', 'income')
+                ->where('status', 'approved')
+                ->whereYear('transaction_date', $month->year)
+                ->whereMonth('transaction_date', $month->month)
+                ->sum('amount');
+                
+            $expenseTotals[] = (float) FinanceTransaction::where('mosque_id', $mosqueId)
+                ->where('entry_type', 'expense')
+                ->where('status', 'approved')
+                ->whereYear('transaction_date', $month->year)
+                ->whereMonth('transaction_date', $month->month)
+                ->sum('amount');
+        }
+
+        $campaignBreakdownRaw = (clone $donationQuery)
+            ->selectRaw('campaign, count(*) as total_records, sum(amount) as total_amount')
+            ->groupBy('campaign')
+            ->orderByDesc('total_amount')
+            ->limit(5)
+            ->get();
+
+        $assetConditionsRaw = Asset::query()
+            ->where('mosque_id', $mosqueId)
+            ->selectRaw('condition, count(*) as total')
+            ->groupBy('condition')
+            ->orderBy('condition')
+            ->get();
+
+        $chartData = [
+            'keuangan_bulanan' => [
+                'labels' => $months,
+                'datasets' => [
+                    [
+                        'label' => 'Pemasukan',
+                        'backgroundColor' => '#10b981',
+                        'data' => $incomeTotals
+                    ],
+                    [
+                        'label' => 'Pengeluaran',
+                        'backgroundColor' => '#f87171',
+                        'data' => $expenseTotals
+                    ]
+                ]
+            ],
+            'donasi_campaign' => [
+                'labels' => $campaignBreakdownRaw->pluck('campaign')->toArray(),
+                'datasets' => [
+                    [
+                        'label' => 'Total Donasi',
+                        'backgroundColor' => ['#f472b6', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa'],
+                        'data' => $campaignBreakdownRaw->pluck('total_amount')->toArray()
+                    ]
+                ]
+            ],
+            'aset_kondisi' => [
+                'labels' => $assetConditionsRaw->pluck('condition')->map(fn($c) => ucfirst($c))->toArray(),
+                'datasets' => [
+                    [
+                        'label' => 'Jumlah Aset',
+                        'backgroundColor' => ['#34d399', '#fbbf24', '#f87171'],
+                        'data' => $assetConditionsRaw->pluck('total')->toArray()
+                    ]
+                ]
+            ]
+        ];
+
         return Inertia::render('Admin/Reports/Index', [
             'filters' => [
                 'start_date' => $startDate,
                 'end_date' => $endDate,
             ],
+            'chartData' => $chartData,
             'summary' => [
                 'income_total' => (float) (clone $financeQuery)
                     ->where('entry_type', 'income')
@@ -124,20 +204,70 @@ class ReportController extends Controller
     public function export(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $mosqueId = $request->user()->mosque_id;
-        
-        $finance = FinanceTransaction::query()
-            ->with('category:id,name')
-            ->where('mosque_id', $mosqueId)
-            ->where('status', 'approved')
-            ->orderBy('transaction_date', 'desc')
-            ->get(['transaction_date', 'title', 'entry_type', 'amount', 'finance_category_id']);
-
-        $fileName = "laporan-keuangan-{$request->start_date}-{$request->end_date}.csv";
+        $type = $request->get('type', 'keuangan');
+        $fileName = "laporan-{$type}-{$request->start_date}-{$request->end_date}.csv";
 
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => "attachment; filename={$fileName}",
         ];
+
+        if ($type === 'donasi') {
+            $donations = Donation::query()
+                ->where('mosque_id', $mosqueId)
+                ->where('status', 'confirmed')
+                ->whereDate('donation_date', '>=', $request->start_date)
+                ->whereDate('donation_date', '<=', $request->end_date)
+                ->orderBy('donation_date', 'desc')
+                ->get();
+
+            $callback = function () use ($donations) {
+                $file = fopen('php://output', 'w');
+                fputcsv($file, ['Tanggal', 'Campaign', 'Jumlah', 'Metode']);
+                foreach ($donations as $row) {
+                    fputcsv($file, [
+                        optional($row->donation_date)->toDateString(),
+                        $row->campaign,
+                        number_format((float) $row->amount, 0, ',', '.'),
+                        $row->payment_method ?? '-',
+                    ]);
+                }
+                fclose($file);
+            };
+            return response()->stream($callback, 200, $headers);
+        }
+
+        if ($type === 'aset') {
+            $assets = Asset::query()
+                ->where('mosque_id', $mosqueId)
+                ->orderBy('name', 'asc')
+                ->get();
+
+            $callback = function () use ($assets) {
+                $file = fopen('php://output', 'w');
+                fputcsv($file, ['Nama Aset', 'Kategori', 'Kondisi', 'Tanggal Perolehan']);
+                foreach ($assets as $row) {
+                    fputcsv($file, [
+                        $row->name,
+                        $row->category ?? '-',
+                        $row->condition,
+                        optional($row->acquisition_date)->toDateString() ?? '-',
+                    ]);
+                }
+                fclose($file);
+            };
+            return response()->stream($callback, 200, $headers);
+        }
+
+        // Default: Keuangan
+        $finance = FinanceTransaction::query()
+            ->with('category:id,name')
+            ->where('mosque_id', $mosqueId)
+            ->where('status', 'approved')
+            ->whereDate('transaction_date', '>=', $request->start_date)
+            ->whereDate('transaction_date', '<=', $request->end_date)
+            ->orderBy('transaction_date', 'desc')
+            ->get(['transaction_date', 'title', 'entry_type', 'amount', 'finance_category_id']);
 
         $callback = function () use ($finance) {
             $file = fopen('php://output', 'w');
