@@ -12,6 +12,8 @@ import Input from "@/Components/ui/input/Input.vue"
 import Select from "@/Components/ui/select/Select.vue"
 import Textarea from "@/Components/ui/textarea/Textarea.vue"
 import StatusBadge from "@/Components/ui/status/StatusBadge.vue"
+import ClickableCard from "@/Components/ClickableCard.vue"
+import DetailModal from "@/Components/DetailModal.vue"
 import ActionMenu from "@/Components/ui/dropdown/ActionMenu.vue"
 import PageHeader from "@/Components/ui/page/PageHeader.vue"
 import Dialog from "@/Components/ui/dialog/Dialog.vue"
@@ -39,6 +41,16 @@ const filterForm = useForm({
 })
 
 const createDialogOpen = ref(false)
+const detailDialog = ref({ open: false, item: null })
+const openDetailDialog = (item) => {
+  detailDialog.value.item = item
+  detailDialog.value.open = true
+}
+const closeDetailDialog = () => {
+  detailDialog.value.open = false
+  setTimeout(() => { detailDialog.value.item = null }, 300)
+}
+
 const createForm = useForm({
   donor_name: "",
   phone: "",
@@ -203,17 +215,18 @@ const submitReject = () => {
           <template v-else>
             <DataTable v-if="donations.data.length" :data="donations.data">
               <template #mobile-card="{ item }">
-                <div class="flex items-center justify-between border-b border-slate-100 bg-white p-4 rounded-xl shadow-sm mb-2">
-                  <div>
+                <ClickableCard @open="openDetailDialog(item)">
+                  <div class="flex items-center justify-between">
+                    <div>
                     <p class="font-medium text-slate-900">{{ item.donor_name }}</p>
                     <p class="text-xs text-slate-500">{{ item.campaign }} • {{ item.donation_date }}</p>
                     <p class="mt-1 font-medium text-slate-900">{{ formatCurrency(item.amount) }}</p>
                   </div>
-                  <div class="flex flex-col items-end gap-2">
-                    <StatusBadge :status="item.status" />
-                    <ActionMenu :items="actionItems(item)" @select="handleAction(item, $event)" />
+                    <div class="flex flex-col items-end gap-2">
+                      <StatusBadge :status="item.status" />
+                    </div>
                   </div>
-                </div>
+                </ClickableCard>
               </template>
               <thead class="bg-slate-50 text-xs uppercase text-slate-500">
                 <tr>
@@ -225,7 +238,7 @@ const submitReject = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="item in donations.data" :key="item.id" class="border-t border-slate-100">
+                <tr v-for="item in donations.data" :key="item.id" @click="openDetailDialog(item)" class="border-t border-slate-100 cursor-pointer hover:bg-slate-50 transition-colors">
                   <td class="px-4 py-3">
                     <p class="font-medium text-slate-900">{{ item.donor_name }}</p>
                     <p class="text-xs text-slate-500">{{ item.phone || "-" }} • {{ item.donation_date }}</p>
@@ -240,8 +253,8 @@ const submitReject = () => {
                   </td>
                   <td class="px-4 py-3"><StatusBadge :status="item.status" /></td>
                   <td class="px-4 py-3 text-right">
-                    <div class="flex justify-end">
-                      <ActionMenu :items="actionItems(item)" @select="handleAction(item, $event)" />
+                    <div class="flex justify-end text-slate-400">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                     </div>
                   </td>
                 </tr>
@@ -385,6 +398,35 @@ const submitReject = () => {
         </div>
       </div>
     </Dialog>
+  
+    <DetailModal 
+      :show="detailDialog.open" 
+      @update:show="val => { if(!val) closeDetailDialog() }"
+      :data="detailDialog.item"
+      @approve="handleAction(detailDialog.item, 'confirm'); closeDetailDialog()"
+      @reject="handleAction(detailDialog.item, 'reject'); closeDetailDialog()"
+    >
+      <div v-if="detailDialog.item" class="space-y-3 text-sm">
+        <h3 class="text-lg font-bold text-slate-900 mb-4">{{ detailDialog.item.donor_name }}</h3>
+        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+            <span class="text-slate-500">Nominal</span>
+            <span class="font-bold text-slate-900 text-base">{{ formatCurrency(detailDialog.item.amount) }}</span>
+        </div>
+        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+            <span class="text-slate-500">Program</span>
+            <span class="font-medium">{{ detailDialog.item.campaign }}</span>
+        </div>
+        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+            <span class="text-slate-500">Metode</span>
+            <span class="font-medium text-slate-900 uppercase">{{ detailDialog.item.method }}</span>
+        </div>
+        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+            <span class="text-slate-500">Tanggal</span>
+            <span class="font-medium text-slate-900">{{ detailDialog.item.donation_date }}</span>
+        </div>
+      </div>
+    </DetailModal>
+
   </AuthenticatedLayout>
 
 </template>

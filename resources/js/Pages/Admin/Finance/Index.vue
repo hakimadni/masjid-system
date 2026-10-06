@@ -13,7 +13,8 @@ import Select from "@/Components/ui/select/Select.vue"
 import Textarea from "@/Components/ui/textarea/Textarea.vue"
 import StatusBadge from "@/Components/ui/status/StatusBadge.vue"
 import MoneyDisplay from "@/Components/ui/display/MoneyDisplay.vue"
-import ActionMenu from "@/Components/ui/dropdown/ActionMenu.vue"
+import ClickableCard from "@/Components/ClickableCard.vue"
+import DetailModal from "@/Components/DetailModal.vue"
 import PageHeader from "@/Components/ui/page/PageHeader.vue"
 import Dialog from "@/Components/ui/dialog/Dialog.vue"
 import ConfirmDialog from "@/Components/ui/dialog/ConfirmDialog.vue"
@@ -288,7 +289,7 @@ const submitReject = () => {
           <template v-else>
             <DataTable v-if="financeEntries.data.length" :data="financeEntries.data">
               <template #mobile-card="{ item }">
-                <div @click="openDetailDialog(item)" class="cursor-pointer group relative flex flex-col justify-between rounded-3xl border border-emerald-900/5 bg-white shadow-lg shadow-emerald-900/5 ring-1 ring-slate-100/50 mb-3 p-4 transition-all active:scale-95">
+                <ClickableCard @open="openDetailDialog(item)">
                   <div class="flex items-start justify-between gap-2">
                      <div class="flex items-start gap-3 min-w-0">
                         <div :class="[
@@ -312,7 +313,7 @@ const submitReject = () => {
                         </div>
                      </div>
                   </div>
-                </div>
+                </ClickableCard>
               </template>
               <thead class="bg-slate-50 text-xs uppercase text-slate-500">
                 <tr>
@@ -373,21 +374,14 @@ const submitReject = () => {
       <Textarea v-model="rejectionForm.rejected_reason" :rows="3" placeholder="Masukkan alasan penolakan..." />
     </ConfirmDialog>
     
-    <Dialog :open="detailDialog.open" @update:open="detailDialog.open = $event" @close="closeDetailDialog">
-      <div class="p-5 overflow-y-auto max-h-[85vh]" v-if="detailDialog.item">
-        <p class="text-sm font-semibold text-slate-900 mb-4">Detail Transaksi</p>
-        
-        <div class="flex gap-3 mb-6" v-if="detailDialog.item.status === 'pending'">
-            <Button variant="success" class="flex-1 shadow-md" @click="handleAction(detailDialog.item, 'approve')">Setujui (Approve)</Button>
-            <button class="flex-1 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-medium text-sm shadow-md shadow-rose-950/10" @click="handleAction(detailDialog.item, 'reject')">Tolak (Reject)</button>
-        </div>
-        <div class="flex gap-3 mb-6" v-else>
-            <div class="flex-1 text-center bg-slate-50 p-3 rounded-xl border border-slate-100 flex flex-col items-center justify-center">
-               <p class="text-xs text-slate-500 mb-2">Status Saat Ini</p>
-               <StatusBadge :status="detailDialog.item.status" />
-            </div>
-        </div>
-
+    <DetailModal 
+      :show="detailDialog.open" 
+      @update:show="val => { if(!val) closeDetailDialog() }"
+      :data="detailDialog.item"
+      @approve="handleAction(detailDialog.item, 'approve')"
+      @reject="handleAction(detailDialog.item, 'reject')"
+    >
+      <div v-if="detailDialog.item">
         <h3 class="text-lg font-bold text-slate-900 mb-4">{{ detailDialog.item.title }}</h3>
         <div class="space-y-3 text-sm">
             <div class="flex justify-between items-center border-b border-slate-100 pb-2">
@@ -419,8 +413,9 @@ const submitReject = () => {
                 </a>
             </div>
         </div>
+      
       </div>
-    </Dialog>
+    </DetailModal>
 
     <MobileFab @click="scrollToForm" />
   
